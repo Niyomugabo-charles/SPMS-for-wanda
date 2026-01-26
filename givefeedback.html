@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Mentor View - Student Projects</title>
+  <style>
+    * { box-sizing: border-box; font-family: Arial, Helvetica, sans-serif; }
+    body { margin: 0; background: linear-gradient(135deg, #0f2027, #203a43, #2c5364); color: #fff; }
+    header { padding: 20px; background: rgba(0, 0, 0, 0.4); text-align: center; font-size: 22px; font-weight: bold; letter-spacing: 1px; }
+    .container { padding: 20px; max-width: 1100px; margin: auto; }
+    .search-box { display: flex; justify-content: space-between; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
+    .search-box input { flex: 1; padding: 10px; border-radius: 8px; border: none; outline: none; }
+    .project-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+    .project-card { background: rgba(255, 255, 255, 0.08); padding: 15px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); transition: transform 0.3s; cursor: pointer; }
+    .project-card:hover { transform: translateY(-5px); }
+    .project-card h3 { margin: 0; font-size: 18px; color: #4fc3f7; }
+    .project-card p { font-size: 14px; opacity: 0.9; }
+    .status { display: inline-block; margin-top: 5px; padding: 4px 10px; border-radius: 20px; font-size: 12px; }
+    .pending { background: orange; }
+    .approved { background: green; }
+    .rejected { background: red; }
+
+    /* Modal */
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; }
+    .modal-content { background: #1e2f38; width: 90%; max-width: 500px; padding: 20px; border-radius: 15px; }
+    .modal-content h2 { margin-top: 0; color: #4fc3f7; }
+    textarea { width: 100%; min-height: 80px; border-radius: 8px; border: none; padding: 10px; margin-top: 10px; outline: none; }
+    .actions { margin-top: 15px; display: flex; gap: 10px; }
+    button { flex: 1; padding: 10px; border-radius: 10px; border: none; cursor: pointer; font-weight: bold; }
+    .btn-approve { background: #2ecc71; }
+    .btn-reject { background: #e74c3c; }
+    .btn-close { background: #95a5a6; }
+  </style>
+</head>
+<body>
+
+<header>
+  Mentor Panel - View Student Projects
+</header>
+
+<div class="container">
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search by student or project name..." />
+  </div>
+
+  <div class="project-list" id="projectList"></div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="projectModal">
+  <div class="modal-content">
+    <h2 id="modalTitle"></h2>
+    <p><strong>Student:</strong> <span id="modalStudent"></span></p>
+    <p><strong>Description:</strong></p>
+    <p id="modalDescription"></p>
+
+    <label>Add Comment:</label>
+    <textarea id="mentorComment" placeholder="Write feedback for student..."></textarea>
+
+    <h4>Previous Feedback</h4>
+    <div id="feedbackList" style="max-height:120px; overflow-y:auto; background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;"></div>
+
+    <div class="actions">
+      <button class="btn-approve" onclick="sendReply()">Send Reply</button>
+      <button class="btn-close" onclick="closeModal()">Close</button>
+    </div>
+
+    <hr style="margin:15px 0; opacity:0.3;">
+
+    <h4 style="color:#2ecc71;">🆕 Assign Marks (0 - 100)</h4>
+    <input type="number" id="marksInput" min="0" max="100" placeholder="Enter marks" style="width:100%;padding:10px;border-radius:8px;border:none;outline:none;">
+    <button style="margin-top:8px;background:#2ecc71;color:#fff;" onclick="saveMarks()">Save Marks</button>
+
+    <h4 style="margin-top:15px;color:#9b59b6;">🆕 Detailed Project Report</h4>
+    <textarea id="reportInput" placeholder="Write detailed project report..."></textarea>
+    <button style="margin-top:8px;background:#9b59b6;color:#fff;" onclick="saveReport()">Save Report</button>
+
+    <h4 style="margin-top:15px;color:#f39c12;">🆕 Download Project File</h4>
+    <a id="downloadLink" href="#" download style="display:inline-block;margin-top:8px;background:#f39c12;padding:10px 15px;border-radius:10px;text-decoration:none;color:#000;">Download File</a>
+  </div>
+</div>
+
+<script>
+  const projects = [
+    {
+      id: 1,
+      title: 'Online Library System',
+      student: 'Jean Claude',
+      description: 'System that manages book borrowing and returning records.',
+      status: 'Pending',
+      feedback: [],
+      marks: '',
+      report: '',
+      file: 'sample-project.zip'
+    },
+    {
+      id: 2,
+      title: 'Student Result Portal',
+      student: 'Aline Mukamana',
+      description: 'Web app to view and manage student academic results.',
+      status: 'Approved',
+      feedback: ['Good structure, improve UI design'],
+      marks: 85,
+      report: 'Well done project report',
+      file: 'sample-project.zip'
+    },
+    {
+      id: 3,
+      title: 'Attendance Management',
+      student: 'Eric Niyonsenga',
+      description: 'Digital system for recording class attendance.',
+      status: 'Pending',
+      feedback: [],
+      marks: '',
+      report: '',
+      file: 'sample-project.zip'
+    }
+  ];
+
+  let selectedProject = null;
+  const projectList = document.getElementById('projectList');
+  const searchInput = document.getElementById('searchInput');
+
+  function displayProjects(list) {
+    projectList.innerHTML = '';
+    list.forEach(project => {
+      const card = document.createElement('div');
+      card.className = 'project-card';
+      card.onclick = () => openModal(project);
+
+      let statusClass = project.status.toLowerCase();
+      card.innerHTML = `
+        <h3>${project.title}</h3>
+        <p><strong>Student:</strong> ${project.student}</p>
+        <span class="status ${statusClass}">${project.status}</span>
+      `;
+      projectList.appendChild(card);
+    });
+  }
+
+  function openModal(project) {
+    selectedProject = project;
+    document.getElementById('modalTitle').textContent = project.title;
+    document.getElementById('modalStudent').textContent = project.student;
+    document.getElementById('modalDescription').textContent = project.description;
+
+    const feedbackDiv = document.getElementById('feedbackList');
+    feedbackDiv.innerHTML = project.feedback.length
+      ? project.feedback.map(f => `<p>• ${f}</p>`).join('')
+      : '<em>No feedback yet</em>';
+
+    document.getElementById('marksInput').value = project.marks;
+    document.getElementById('reportInput').value = project.report;
+
+    const link = document.getElementById('downloadLink');
+    link.href = project.file;
+
+    document.getElementById('mentorComment').value = '';
+    document.getElementById('projectModal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('projectModal').style.display = 'none';
+  }
+
+  function sendReply() {
+    if (!selectedProject) return;
+    const comment = document.getElementById('mentorComment').value.trim();
+    if (comment !== '') {
+      selectedProject.feedback.push(comment);
+      alert('Reply sent to student');
+      displayProjects(projects);
+      openModal(selectedProject); // refresh modal
+    }
+  }
+
+  function saveMarks() {
+    if (!selectedProject) return;
+    selectedProject.marks = document.getElementById('marksInput').value;
+    alert('Marks saved successfully');
+  }
+
+  function saveReport() {
+    if (!selectedProject) return;
+    selectedProject.report = document.getElementById('reportInput').value;
+    alert('Project report saved');
+  }
+
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.toLowerCase();
+    const filtered = projects.filter(p =>
+      p.title.toLowerCase().includes(query) || p.student.toLowerCase().includes(query)
+    );
+    displayProjects(filtered);
+  });
+
+  // Initial display
+  displayProjects(projects);
+</script>
+
+</body>
+</html>

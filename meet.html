@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentor-Student Live Meeting</title>
+<style>
+body { font-family: Arial, sans-serif; margin:0; background:#0f172a; color:#fff; }
+#meeting { display:grid; grid-template-columns:220px 1fr 300px; height:100vh; opacity:0; transition:opacity 0.5s;}
+#meeting.show { opacity:1; }
+
+.participants { background:#020617; padding:10px; border-right:1px solid #333; }
+.participants h3 { margin-bottom:10px; font-size:18px; }
+.participants ul { list-style:none; padding:0; }
+.participants li { padding:6px 4px; margin-bottom:4px; background:#111827; border-radius:6px; }
+
+.video-area { display:flex; flex-direction:column; padding:10px;}
+.video-grid { flex:1; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:10px; margin-bottom:10px;}
+.video-box { background:#111827; border-radius:10px; display:flex; justify-content:center; align-items:center; font-size:18px; height:150px;}
+
+.controls { display:flex; gap:10px; margin-top:10px;}
+button { padding:8px 12px; border:none; border-radius:6px; cursor:pointer; background:#1f2937; color:#fff; transition:all 0.2s;}
+button:hover { opacity:0.9; transform:scale(1.05);}
+button.danger { background:crimson; }
+button.green { background:#10b981; color:#fff; }
+
+#status { margin-top:10px; font-size:16px; color:gold; }
+
+.chat { display:flex; flex-direction:column; padding:10px; background:#020617; border-left:1px solid #333;}
+.chat h3 { margin-bottom:10px; }
+#messages { flex:1; background:#111827; padding:6px; overflow-y:auto; border-radius:6px;}
+.message { background:#1f2937; padding:6px 8px; margin-bottom:6px; border-radius:6px; }
+.chat-input { display:flex; gap:5px; margin-top:6px; }
+.chat-input input { flex:1; padding:6px 8px; border-radius:6px; border:none; }
+.chat-input button { background:gold; color:#000; font-weight:bold; cursor:pointer; }
+.chat-input button:hover { transform:scale(1.05); }
+
+#mentorNotification, #joinNotification, #responseBox { 
+  display:flex; flex-direction:column; align-items:center; justify-content:center; 
+  position:absolute; top:0; left:0; right:0; bottom:0; 
+  background:rgba(0,0,0,0.8); z-index:100; color:#fff; font-size:18px; 
+}
+#mentorNotification button, #joinNotification button, #sendResponse { margin-top:10px; background:#10b981; color:#fff; font-weight:bold; padding:8px 12px;}
+#responseBox { display:none; }
+#responseBox input { padding:6px 8px; border-radius:6px; border:none; width:200px; }
+</style>
+</head>
+<body>
+
+<div id="meeting">
+
+  <!-- LEFT: Participants -->
+  <aside class="participants">
+    <h3>Participants</h3>
+    <ul id="participantList"></ul>
+  </aside>
+
+  <!-- CENTER: Video -->
+  <main class="video-area">
+    <div class="video-grid" id="videoGrid">
+      <div class="video-box">Meeting not started</div>
+    </div>
+
+    <div class="controls">
+      <button id="screenBtn">🖥️ Share Screen</button>
+      <button id="questionBtn">✋ Ask Question</button>
+      <button id="ideaBtn">💡 Share Idea</button>
+      <button id="leaveBtn" class="danger">Leave</button>
+    </div>
+
+    <p id="status"></p>
+  </main>
+
+  <!-- RIGHT: Chat -->
+  <aside class="chat">
+    <h3>Chat / Ideas / Questions</h3>
+    <div id="messages"></div>
+    <div class="chat-input">
+      <input id="chatInput" placeholder="Type message...">
+      <button id="sendBtn">Send</button>
+    </div>
+  </aside>
+
+</div>
+
+<!-- Mentor notification overlay -->
+<div id="mentorNotification">
+  <p>📢 You (Mentor) can start the meeting and notify students.</p>
+  <button id="notifyBtn">Send Notification to Students</button>
+</div>
+
+<!-- Student notification overlay -->
+<div id="joinNotification" style="display:none;">
+  <p>📢 Mentor/Admin started the meeting. Join now!</p>
+  <button id="joinBtn">✅ Join Meeting</button>
+</div>
+
+<!-- Mentor response overlay -->
+<div id="responseBox">
+  <p>Respond to Student's Idea/Question:</p>
+  <input id="responseInput" placeholder="Type response...">
+  <button id="sendResponse">Send Response</button>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const meeting = document.getElementById("meeting");
+  const participantList = document.getElementById("participantList");
+  const videoGrid = document.getElementById("videoGrid");
+  const statusText = document.getElementById("status");
+  const messages = document.getElementById("messages");
+
+  const mentorNotification = document.getElementById("mentorNotification");
+  const notifyBtn = document.getElementById("notifyBtn");
+
+  const joinNotification = document.getElementById("joinNotification");
+  const joinBtn = document.getElementById("joinBtn");
+
+  const responseBox = document.getElementById("responseBox");
+  const responseInput = document.getElementById("responseInput");
+  const sendResponse = document.getElementById("sendResponse");
+
+  const students = ["You"];
+  const participants = ["Mentor","Admin"];
+  let studentsInMeeting = [];
+
+  meeting.classList.add("show");
+
+  function addMessage(text,color="#1f2937") {
+    const msg = document.createElement("div");
+    msg.className="message";
+    msg.style.background=color;
+    msg.textContent=text;
+    messages.appendChild(msg);
+    messages.scrollTop=messages.scrollHeight;
+  }
+
+  function renderParticipants() {
+    participantList.innerHTML="";
+    participants.forEach(p=>{
+      const li = document.createElement("li");
+      li.textContent=p;
+      participantList.appendChild(li);
+    });
+    studentsInMeeting.forEach(s=>{
+      const li = document.createElement("li");
+      li.textContent=s;
+      participantList.appendChild(li);
+    });
+  }
+
+  function addStudentVideo(name) {
+    const videoBox = document.createElement("div");
+    videoBox.className="video-box";
+    videoBox.textContent=name;
+    videoGrid.appendChild(videoBox);
+  }
+
+  // Auto add Mentor/Admin videos
+  participants.forEach(p=>{
+    addStudentVideo(p);
+  });
+
+  // Mentor sends notification
+  notifyBtn.addEventListener("click", ()=>{
+    mentorNotification.style.display="none";
+    joinNotification.style.display="flex";
+    addMessage("Mentor/Admin sent meeting notification to students","#ffbf00");
+    statusText.textContent="📢 Notification sent. Waiting for student to join...";
+  });
+
+  // Student joins meeting after seeing notification
+  joinBtn.addEventListener("click", async () => {
+    joinNotification.style.display="none";
+    studentsInMeeting.push(students[0]);
+    renderParticipants();
+    addStudentVideo(students[0]);
+    addMessage("Student joined the meeting!", "#10b981");
+    statusText.textContent="✅ Meeting in progress";
+
+    try{
+      const stream = await navigator.mediaDevices.getUserMedia({video:true,audio:true});
+      const yourVideo = videoGrid.querySelector(".video-box:last-child");
+      const newVideo = document.createElement("video");
+      newVideo.srcObject=stream;
+      newVideo.autoplay=true;
+      newVideo.muted=true;
+      newVideo.style.borderRadius="10px";
+      newVideo.style.height="150px";
+      videoGrid.replaceChild(newVideo, yourVideo);
+    }catch{
+      addMessage("Camera/Microphone access denied", "crimson");
+    }
+  });
+
+  // Chat
+  document.getElementById("sendBtn").onclick=()=>{
+    const input=document.getElementById("chatInput");
+    if(!input.value.trim()) return;
+    addMessage(`You: ${input.value}`);
+    input.value="";
+  }
+
+  // Raise question
+  document.getElementById("questionBtn").onclick=()=>{
+    addMessage("Student raised a QUESTION","gold");
+    statusText.textContent="✋ You raised a QUESTION. Waiting for mentor response...";
+    responseBox.style.display="flex";
+  }
+
+  // Share idea
+  document.getElementById("ideaBtn").onclick=()=>{
+    addMessage("Student shared an IDEA","lightgreen");
+    statusText.textContent="💡 You shared an IDEA";
+    responseBox.style.display="flex";
+  }
+
+  // Mentor sends response
+  sendResponse.addEventListener("click", ()=>{
+    if(!responseInput.value.trim()) return;
+    addMessage("Mentor: "+responseInput.value,"#3b82f6");
+    responseInput.value="";
+    responseBox.style.display="none";
+  });
+
+  // Screen share
+  document.getElementById("screenBtn").onclick=async()=>{
+    try{
+      await navigator.mediaDevices.getDisplayMedia({video:true});
+      addMessage("Screen sharing started","#2563eb");
+    }catch{
+      addMessage("Screen share cancelled.","crimson");
+    }
+  }
+
+  // Leave
+  document.getElementById("leaveBtn").onclick=()=>location.reload();
+
+});
+</script>
+
+</body>
+</html>

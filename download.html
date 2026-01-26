@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Manage Tasks - Modern UI with Download</title>
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+  body { margin: 0; background: linear-gradient(135deg, #f5f7fa, #c3cfe2); color: #333; }
+  header { background: linear-gradient(135deg, #6a11cb, #2575fc); color: white; padding: 1.2rem; text-align: center; font-size: 1.8rem; font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.3);}
+  .container { max-width: 1200px; margin: 2rem auto; padding: 1.5rem; background: white; border-radius: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+  
+  form { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1rem; }
+  form input, form select { padding: 0.6rem; border: 1px solid #ccc; border-radius: 8px; transition: 0.3s; font-size: 1rem; }
+  form input:focus, form select:focus { border-color: #6a11cb; box-shadow: 0 0 8px rgba(106,17,203,0.3); outline: none; }
+  form button { grid-column: 1/-1; padding: 0.8rem; border: none; background: linear-gradient(135deg, #6a11cb, #2575fc); color: white; font-size: 1.1rem; border-radius: 10px; cursor: pointer; transition: 0.3s; font-weight: bold; }
+  form button:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+  .filter-container { margin-bottom: 1.5rem; display: flex; flex-wrap: wrap; gap: 1rem; justify-content: flex-start; }
+  .filter-container input, .filter-container select { padding: 0.5rem 0.7rem; border-radius: 8px; border: 1px solid #ccc; transition: 0.3s; }
+  .filter-container input:focus, .filter-container select:focus { border-color: #2575fc; box-shadow: 0 0 8px rgba(37,117,252,0.3); outline: none; }
+
+  #downloadBtn { padding: 0.6rem 1rem; border-radius: 8px; border: none; background: linear-gradient(135deg, #ff6a00, #ee0979); color: white; font-weight: bold; cursor: pointer; transition: 0.3s; margin-bottom: 1.5rem; }
+  #downloadBtn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.95rem; }
+  table th, table td { padding: 0.8rem 0.6rem; text-align: left; }
+  table th { background: #f0f0f0; font-weight: 600; }
+  table tbody tr { transition: background 0.3s, transform 0.3s; }
+  table tbody tr:hover { background: rgba(106,17,203,0.05); transform: translateX(3px); }
+
+  .actions button { margin-right: 5px; padding: 0.4rem 0.6rem; border: none; border-radius: 6px; cursor: pointer; font-size: 0.85rem; transition: 0.3s; font-weight: bold; }
+  .edit-btn { background: #ffb74d; color: white; }
+  .edit-btn:hover { background: #ffa726; transform: scale(1.05); }
+  .delete-btn { background: #e57373; color: white; }
+  .delete-btn:hover { background: #ef5350; transform: scale(1.05); }
+  .status-btn { background: #81c784; color: white; }
+  .status-btn:hover { background: #66bb6a; transform: scale(1.05); }
+
+  .badge { padding: 0.3rem 0.6rem; border-radius: 12px; font-size: 0.85rem; font-weight: bold; color: white; }
+  .Pending { background: #ffb74d; }
+  .In\ Progress { background: #4fc3f7; }
+  .Completed { background: #81c784; }
+
+  @media(max-width: 768px){ form { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<header>🌟 Modern Task Manager</header>
+<div class="container">
+
+  <div class="filter-container">
+    <input type="text" id="searchInput" placeholder="Search Task...">
+    <select id="statusFilter">
+      <option value="">All Status</option>
+      <option value="Pending">Pending</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Completed">Completed</option>
+    </select>
+    <select id="priorityFilter">
+      <option value="">All Priority</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+  </div>
+
+  <button id="downloadBtn">⬇ Download Tasks</button>
+
+  <form id="taskForm">
+    <input type="text" id="title" placeholder="Task Title" required>
+    <input type="text" id="assignedTo" placeholder="Student Name" required>
+    <input type="text" id="mentor" placeholder="Mentor Name" required>
+    <input type="date" id="deadline" required>
+    <select id="priority" required>
+      <option value="">Select Priority</option>
+      <option value="High">High</option>
+      <option value="Medium">Medium</option>
+      <option value="Low">Low</option>
+    </select>
+    <select id="status" required>
+      <option value="">Select Status</option>
+      <option value="Pending">Pending</option>
+      <option value="In Progress">In Progress</option>
+      <option value="Completed">Completed</option>
+    </select>
+    <button type="submit">Add / Update Task</button>
+  </form>
+
+  <table id="taskTable">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Student</th>
+        <th>Mentor</th>
+        <th>Deadline</th>
+        <th>Priority</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+</div>
+
+<script>
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+
+function saveTasks() {
+  localStorage.setItem('tasks', JSON.stringify(tasks));
+  renderTasks();
+}
+
+function renderTasks() {
+  const tbody = document.querySelector('#taskTable tbody');
+  const searchText = document.getElementById('searchInput').value.toLowerCase();
+  const statusFilter = document.getElementById('statusFilter').value;
+  const priorityFilter = document.getElementById('priorityFilter').value;
+
+  tbody.innerHTML = '';
+  tasks.filter(task => {
+    return (!searchText || task.title.toLowerCase().includes(searchText)) &&
+           (!statusFilter || task.status === statusFilter) &&
+           (!priorityFilter || task.priority === priorityFilter);
+  }).forEach((task, index) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${task.title}</td>
+      <td>${task.assignedTo}</td>
+      <td>${task.mentor}</td>
+      <td>${task.deadline}</td>
+      <td>${task.priority}</td>
+      <td><span class="badge ${task.status.replace(' ','\\ ')}">${task.status}</span></td>
+      <td class="actions">
+        <button class="edit-btn" onclick="editTask(${index})">Edit</button>
+        <button class="delete-btn" onclick="deleteTask(${index})">Delete</button>
+        <button class="status-btn" onclick="toggleStatus(${index})">Next Status</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+document.getElementById('taskForm').addEventListener('submit', function(e){
+  e.preventDefault();
+  const title = document.getElementById('title').value;
+  const assignedTo = document.getElementById('assignedTo').value;
+  const mentor = document.getElementById('mentor').value;
+  const deadline = document.getElementById('deadline').value;
+  const priority = document.getElementById('priority').value;
+  const status = document.getElementById('status').value;
+
+  if(this.dataset.editIndex !== undefined){
+    tasks[this.dataset.editIndex] = { title, assignedTo, mentor, deadline, priority, status };
+    delete this.dataset.editIndex;
+  } else {
+    tasks.push({ title, assignedTo, mentor, deadline, priority, status });
+  }
+
+  this.reset();
+  saveTasks();
+});
+
+function editTask(index){
+  const task = tasks[index];
+  document.getElementById('title').value = task.title;
+  document.getElementById('assignedTo').value = task.assignedTo;
+  document.getElementById('mentor').value = task.mentor;
+  document.getElementById('deadline').value = task.deadline;
+  document.getElementById('priority').value = task.priority;
+  document.getElementById('status').value = task.status;
+  document.getElementById('taskForm').dataset.editIndex = index;
+}
+
+function deleteTask(index){
+  if(confirm('Are you sure you want to delete this task?')){
+    tasks.splice(index, 1);
+    saveTasks();
+  }
+}
+
+function toggleStatus(index){
+  const statuses = ['Pending','In Progress','Completed'];
+  const currentIndex = statuses.indexOf(tasks[index].status);
+  const nextIndex = (currentIndex + 1) % statuses.length;
+  tasks[index].status = statuses[nextIndex];
+  saveTasks();
+}
+
+document.getElementById('searchInput').addEventListener('input', renderTasks);
+document.getElementById('statusFilter').addEventListener('change', renderTasks);
+document.getElementById('priorityFilter').addEventListener('change', renderTasks);
+
+document.getElementById('downloadBtn').addEventListener('click', function(){
+  if(tasks.length === 0){ alert("No tasks to download!"); return; }
+  const headers = ["Title","Student","Mentor","Deadline","Priority","Status"];
+  const csvRows = [headers.join(',')];
+  tasks.forEach(t => {
+    const values = [t.title,t.assignedTo,t.mentor,t.deadline,t.priority,t.status];
+    csvRows.push(values.map(v => `"${v}"`).join(','));
+  });
+  const csvString = csvRows.join('\n');
+  const blob = new Blob([csvString], {type: 'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'tasks.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+
+renderTasks();
+</script>
+</body>
+</html>

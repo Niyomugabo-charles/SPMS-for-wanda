@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Project Portal</title>
+    <link rel="stylesheet" href="mentor.css">
+    <a href="home2.html"></a>
+</head>
+<body>
+
+    <header>
+        <h1>Student Project Portal</h1>
+        <p>Manage your projects, tasks & meetings in one place</p>
+    </header>
+
+    <div class="container">
+
+        <!-- Insert Project -->
+        <div class="card">
+            <h2>Insert Project</h2>
+            <p>Add information about your new project.</p>
+            <button onclick="location.href='student2.html'">Insert Project</button>
+        </div>
+
+        <!-- View Results -->
+        <div class="card">
+            <h2>View Results</h2>
+            <p>Check your submitted project results and feedback.</p>
+            <button onclick="location.href='view.html'">See Results</button>
+        </div>
+
+        <!-- Edit Tasks -->
+        <div class="card">
+            <h2>Edit Tasks</h2>
+            <p>Modify or update your project tasks.</p>
+            <button onclick="location.href='ex.html'">Edit Tasks</button>
+        </div>
+
+        
+        <!-- Meet Mentor & Admin -->
+        <div class="card wide">
+            <h2>Meet Mentor & Admin</h2>
+            <p>Chat or schedule a meeting with your mentor or school admin.</p>
+            <button onclick="location.href='meet4.html'">Meet Mentor/Admin</button>
+        </div>
+
+    </div>
+    <!-- Loader overlay -->
+<div id="loader-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Content nyamukuru -->
+<div id="content-wrap">
+<div class="center-wrap">
+
+<style>
+    /* GENERAL PAGE STYLING */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #020101;
+    color: rgb(247, 244, 242);
+}
+
+/* HEADER */
+header {
+    text-align: center;
+    padding: 30px;
+    background: #b65302;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    letter-spacing: 1.5px;
+    margin: 0;
+}
+
+header p {
+    opacity: 0.7;
+    margin-top: 5px;
+    font-size: 1.1rem;
+}
+
+/* MAIN CONTAINER */
+.container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+    margin: 40px;
+}
+
+/* CARDS */
+.card {
+    background: #b45a05;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    transition: transform 0.3s, background 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    background: #552803;
+}
+
+.card h2 {
+    margin-bottom: 10px;
+    font-size: 1.6rem;
+}
+
+/* BUTTONS */
+button {
+    background: #000000;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 1rem;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #cc5e04;
+    transform: scale(1.05);
+}
+
+/* WIDE CARD */
+.wide {
+    grid-column: span 2;
+}
+
+@media (max-width: 700px) {
+    .wide {
+        grid-column: span 1;
+    }
+}
+/* Loader overlay full-screen */
+#loader-overlay {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: linear-gradient(135deg, #070707, #020202);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  opacity:1;
+  pointer-events:all;
+  transition: opacity 0.5s ease;
+}
+
+/* Spinner */
+.spinner {
+  border:8px solid rgba(207, 144, 9, 0.3);
+  border-top:8px solid #fff;
+  border-radius:50%;
+  width:70px;
+  height:70px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+<script>
+    window.addEventListener('load', function(){
+    const loader = document.getElementById('loader-overlay');
+    const content = document.getElementById('content-wrap');
+    setTimeout(function(){
+        loader.style.opacity='0';
+        loader.style.pointerEvents='none';
+        content.style.display='block';
+    },2000); // 2 seconds loader
+});
+</script>
+</body>
+</html>

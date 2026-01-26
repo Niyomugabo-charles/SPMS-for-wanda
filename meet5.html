@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Group Meeting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Segoe UI, Arial, sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+      color:#fff;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:15px;
+    }
+
+    .student-meeting{
+      width:100%;
+      max-width:1200px;
+      background:rgba(0,0,0,0.8);
+      border-radius:20px;
+      padding:15px;
+      box-shadow:0 15px 40px rgba(0,0,0,0.6);
+    }
+
+    .header{
+      text-align:center;
+      font-size:22px;
+      font-weight:bold;
+      margin-bottom:15px;
+    }
+
+    .videos{
+      display:grid;
+      grid-template-columns:repeat(auto-fill, minmax(180px, 1fr));
+      gap:12px;
+      max-height:500px;
+      overflow-y:auto;
+    }
+
+    .video-box{
+      position:relative;
+      background:#000;
+      border-radius:15px;
+      overflow:hidden;
+      height:160px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .video-box video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .video-label{
+      position:absolute;
+      bottom:6px;
+      left:6px;
+      background:rgba(0,0,0,0.6);
+      padding:4px 10px;
+      border-radius:12px;
+      font-size:13px;
+    }
+
+    .controls{
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      margin-top:15px;
+      flex-wrap:wrap;
+    }
+
+    .controls button{
+      border:none;
+      background:#00c3ff;
+      color:white;
+      padding:10px 16px;
+      border-radius:30px;
+      cursor:pointer;
+      transition:0.3s;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-weight:600;
+    }
+
+    .controls button:hover{
+      background:#008ecf;
+      transform:scale(1.05);
+    }
+
+    .controls .end{
+      background:#e63946;
+    }
+
+    .controls .end:hover{
+      background:#b52b38;
+    }
+  </style>
+</head>
+<body>
+
+<div class="student-meeting">
+  <div class="header">👨‍🎓 Student Group Meeting (Mentor + Admin + Students)</div>
+
+  <div class="videos" id="groupGrid">
+    <div class="video-box">
+      <video id="studentVideo" autoplay muted></video>
+      <div class="video-label">You (Student)</div>
+    </div>
+
+    <div class="video-box"><div class="video-label">Mentor</div></div>
+    <div class="video-box"><div class="video-label">Admin</div></div>
+
+    <div class="video-box"><div class="video-label">Student 1</div></div>
+    <div class="video-box"><div class="video-label">Student 2</div></div>
+    <div class="video-box"><div class="video-label">Student 3</div></div>
+    <div class="video-box"><div class="video-label">Student 4</div></div>
+    <div class="video-box"><div class="video-label">Student 5</div></div>
+    <div class="video-box"><div class="video-label">Student 6</div></div>
+    <div class="video-box"><div class="video-label">Student 7</div></div>
+    <div class="video-box"><div class="video-label">Student 8</div></div>
+    <div class="video-box"><div class="video-label">Student 9</div></div>
+    <div class="video-box"><div class="video-label">Student 10</div></div>
+    <div class="video-box"><div class="video-label">Student 11</div></div>
+    <div class="video-box"><div class="video-label">Student 12</div></div>
+    <div class="video-box"><div class="video-label">Student 13</div></div>
+    <div class="video-box"><div class="video-label">Student 14</div></div>
+    <div class="video-box"><div class="video-label">Student 15</div></div>
+  </div>
+
+  <div class="controls">
+  <button onclick="adminCallAll()" style="background:#2563eb; color:#fff; font-weight:bold;">📢 Admin Call All</button>
+    <button onclick="startStudentMeeting()"><i class='bx bx-video'></i> Start</button>
+    <button onclick="toggleMute()"><i class='bx bx-microphone'></i> Mute</button>
+    <button onclick="toggleCamera()"><i class='bx bx-camera'></i> Camera</button>
+    <button class="end" onclick="endMeeting()"><i class='bx bx-phone-off'></i> End</button>
+  </div>
+</div>
+
+<script>
+let studentStream;
+let audioOn = true;
+let videoOn = true;
+
+function startStudentMeeting(){
+  navigator.mediaDevices.getUserMedia({video:true,audio:true})
+  .then(stream => {
+    studentStream = stream;
+    document.getElementById('studentVideo').srcObject = stream;
+  })
+  .catch(err => alert('Camera cyangwa Microphone ntibikora'));
+}
+
+function toggleMute(){
+  if(!studentStream) return;
+  audioOn = !audioOn;
+  studentStream.getAudioTracks()[0].enabled = audioOn;
+}
+
+function toggleCamera(){
+  if(!studentStream) return;
+  videoOn = !videoOn;
+  studentStream.getVideoTracks()[0].enabled = videoOn;
+}
+
+function endMeeting(){
+  if(studentStream){
+    studentStream.getTracks().forEach(track => track.stop());
+  }
+  document.getElementById('studentVideo').srcObject = null;
+}
+// ===== Mentor Call All Function =====
+function adminCallAll(){
+  alert('Admin has called all participants to join the meeting');
+
+  // Simulated auto-start for all participants
+  navigator.mediaDevices.getUserMedia({video:true,audio:true})
+  .then(stream => {
+    document.querySelectorAll('video').forEach(v => v.srcObject = stream);
+  })
+  .catch(err => console.log('Permission denied'));
+}
+
+</script>
+
+</body>
+</html>

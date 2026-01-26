@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Positions — Meeting Requests (Chart + Table)</title>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root{
+      --bg: #f7f9fc;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --accent: #f59e0b;
+      --accent-2: #2563eb;
+      font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    }
+    html,body{height:100%;margin:0;background:linear-gradient(180deg,#eef2ff 0%,var(--bg) 100%);}
+    .wrap{max-width:980px;margin:28px auto;padding:20px;}
+    header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+    h1{font-size:20px;margin:0}
+    p.subtitle{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+    .card{background:var(--card);border-radius:12px;padding:18px;box-shadow:0 6px 22px rgba(16,24,40,0.06);}
+    .grid{display:grid;grid-template-columns:1fr 360px;gap:16px}
+
+    /* Chart container */
+    .chart-wrap{display:flex;flex-direction:column;gap:12px}
+    canvas{width:100% !important;height:360px !important}
+
+    /* Controls */
+    .controls{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    button, .btn{
+      background:var(--accent);border:none;color:#fff;padding:8px 12px;border-radius:10px;font-weight:600;cursor:pointer
+    }
+    .btn.secondary{background:#efefef;color:#111}
+    .small{padding:6px 8px;border-radius:8px;font-size:13px}
+
+    /* Right column: table + editor */
+    .right{display:flex;flex-direction:column;gap:12px}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:8px 10px;text-align:left;border-bottom:1px solid #f2f4f7}
+    th{font-weight:700;font-size:13px}
+
+    textarea{width:100%;min-height:110px;padding:10px;border-radius:8px;border:1px solid #e6e9ef;background:#fbfcfe;font-family:monospace}
+    label{font-size:13px;color:var(--muted);display:block;margin-bottom:6px}
+
+    .footer-actions{display:flex;gap:8px;align-items:center;justify-content:flex-end}
+
+    @media (max-width:880px){
+      .grid{grid-template-columns:1fr;}
+      canvas{height:300px !important}
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Positions of Meeting Requesters — Chart & Table</h1>
+        <p class="subtitle">Interactive chart that you can update by pasting CSV/JSON or editing the table.</p>
+      </div>
+      <div class="controls">
+        <button id="downloadPng" title="Download chart as PNG">Download PNG</button>
+        <button id="exportCsv" class="btn secondary small" title="Export current data as CSV">Export CSV</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <div class="card chart-wrap">
+        <div style="display:flex;align-items:center;justify-content:space-between">
+          <strong>Bar Chart — Positions</strong>
+          <div style="color:var(--muted);font-size:13px">Total: <span id="totalCount">0</span></div>
+        </div>
+        <canvas id="barChart"></canvas>
+        <div style="display:flex;gap:8px;align-items:center;justify-content:flex-start">
+          <label style="margin:0;">Chart Type:</label>
+          <select id="chartType" class="small">
+            <option value="bar">Bar</option>
+            <option value="horizontalBar">Horizontal Bar (fallback)</option>
+            <option value="pie">Pie</option>
+            <option value="doughnut">Doughnut</option>
+          </select>
+
+          <button id="resetData" class="btn small" style="background:var(--accent-2)">Reset Sample</button>
+        </div>
+      </div>
+
+      <div class="card right">
+        <div>
+          <strong>Data Table</strong>
+          <table id="dataTable" style="margin-top:8px">
+            <thead><tr><th>Role</th><th>Count</th><th>%</th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div>
+          <label for="dataInput">Paste CSV (Role,Count) or JSON array (ex: [{"Role":"Student","Count":45},...]):</label>
+          <textarea id="dataInput" placeholder="Student,45\nMentor,12\nAdmin,4"></textarea>
+          <div style="display:flex;gap:8px;margin-top:8px">
+            <button id="applyData" class="btn small">Apply Data</button>
+            <button id="clearInput" class="btn secondary small">Clear</button>
+          </div>
+        </div>
+
+        <div style="flex:1"></div>
+        <div class="footer-actions">
+          <small style="color:var(--muted);">Tip: edit or paste and press <strong>Apply Data</strong> to refresh chart.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Default sample dataset
+    const defaultData = [
+      {Imyanya: 'Student', Umubare: 45},
+      {Imyanya: 'Mentor', Umubare: 12},
+      {Imyanya: 'Admin', Umubare: 4},
+      {Imyanya: 'Guest', Umubare: 8},
+      {Imyanya: 'Sponsor', Umubare: 3}
+    ];
+
+    // Helpers to convert
+    function toCsv(data){
+      const lines = data.map(r => `${r.Imyanya},${r.Umubare}`);
+      return lines.join('\n');
+    }
+
+    function parseInputText(text){
+      text = text.trim();
+      if(!text) return [];
+      // Try JSON first
+      try{
+        const parsed = JSON.parse(text);
+        if(Array.isArray(parsed)){
+          // Accept objects with keys using either the original local names or common English keys
+          return parsed.map(x => ({
+            Imyanya: String(x.Imyanya || x.Role || x.name || x.label || ''),
+            Umubare: Number(x.Umubare || x.Count || x.count || x.value || 0)
+          }));
+        }
+      }catch(e){}
+      // Else parse CSV lines
+      const lines = text.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+      const out = [];
+      for(const ln of lines){
+        const parts = ln.split(',');
+        if(parts.length>=2){
+          out.push({Imyanya: parts[0].trim(), Umubare: Number(parts[1].trim()||0)});
+        }
+      }
+      return out;
+    }
+
+    // Chart.js wrapper state
+    let chart = null;
+    let currentData = [...defaultData];
+
+    const ctx = document.getElementById('barChart').getContext('2d');
+
+    function buildChart(type='bar'){
+      const labels = currentData.map(r=>r.Imyanya);
+      const values = currentData.map(r=>r.Umubare);
+
+      const config = {
+        type: type==='horizontalBar' ? 'bar' : type,
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Umubare w\'abasabye',
+            data: values,
+            backgroundColor: labels.map((_,i) => 'rgba(245,158,11,0.95)'),
+            borderColor: 'rgba(0,0,0,0.06)',
+            borderWidth: 1
+          }]
+        },
+        options: {
+          indexAxis: type==='horizontalBar' ? 'y' : 'x',
+          responsive:true,
+          plugins: {
+            legend: { display: type==='bar' ? false : true },
+            tooltip: {enabled:true}
+          },
+          scales: {
+            x: { beginAtZero:true, ticks:{precision:0} },
+            y: { beginAtZero:true }
+          }
+        }
+      };
+
+      if(chart){ chart.destroy(); }
+      chart = new Chart(ctx, config);
+    }
+
+    function refreshTable(){
+      const tbody = document.querySelector('#dataTable tbody');
+      tbody.innerHTML = '';
+      const total = currentData.reduce((s,r)=>s + Number(r.Umubare||0),0);
+      document.getElementById('totalCount').textContent = total;
+      for(const r of currentData){
+        const tr = document.createElement('tr');
+        const tdName = document.createElement('td'); tdName.textContent = r.Imyanya;
+        const tdVal = document.createElement('td'); tdVal.textContent = r.Umubare;
+        const tdPct = document.createElement('td'); tdPct.textContent = total? ((r.Umubare/total*100).toFixed(1) + '%') : '0%';
+        tr.appendChild(tdName); tr.appendChild(tdVal); tr.appendChild(tdPct);
+        tbody.appendChild(tr);
+      }
+    }
+
+    function applyDataFromInput(){
+      const raw = document.getElementById('dataInput').value;
+      const parsed = parseInputText(raw);
+      if(parsed.length>0){
+        currentData = parsed.filter(r => r.Imyanya && !isNaN(r.Umubare));
+        updateAll();
+      } else {
+        alert('No valid rows found. Use CSV lines like: Student,45 or JSON array.');
+      }
+    }
+
+    function updateAll(){
+      // keep order as given, remove empty
+      currentData = currentData.map(r=>({Imyanya:String(r.Imyanya), Umubare:Number(r.Umubare||0)})).filter(r=>r.Imyanya);
+      refreshTable();
+      const t = document.getElementById('chartType').value;
+      buildChart(t);
+    }
+
+    // Wire up buttons
+    document.getElementById('applyData').addEventListener('click', applyDataFromInput);
+    document.getElementById('clearInput').addEventListener('click', ()=>{document.getElementById('dataInput').value='';});
+    document.getElementById('chartType').addEventListener('change', ()=>{buildChart(document.getElementById('chartType').value)});
+    document.getElementById('resetData').addEventListener('click', ()=>{currentData = [...defaultData]; document.getElementById('dataInput').value = toCsv(currentData); updateAll();});
+
+    document.getElementById('downloadPng').addEventListener('click', ()=>{
+      if(!chart) return;
+      const a = document.createElement('a');
+      a.href = chart.toBase64Image();
+      a.download = 'imyanya_meeting_chart.png';
+      a.click();
+    });
+
+    document.getElementById('exportCsv').addEventListener('click', ()=>{
+      const csv = toCsv(currentData);
+      const blob = new Blob([csv], {type: 'text/csv'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'imyanya_meeting_data.csv'; a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // Initialize
+    document.getElementById('dataInput').value = toCsv(defaultData);
+    updateAll();
+  </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Edit & View Project</title>
+<style>
+body { font-family:'Segoe UI', sans-serif; background:#f0f4f8; display:flex; justify-content:center; padding:50px 20px;}
+.container { background:white; padding:30px 40px; border-radius:15px; box-shadow:0 10px 25px rgba(0,0,0,0.1); width:450px;}
+h2 { text-align:center; margin-bottom:20px; color:#333; }
+input[type="text"], textarea, input[type="file"] { width:100%; padding:10px; margin-bottom:10px; border:2px solid #ddd; border-radius:5px; outline:none; transition:all 0.3s ease;}
+input:focus, textarea:focus, input[type="file"]:focus { border-color:#5a67f2; box-shadow:0 0 10px rgba(90,103,242,0.3);}
+button { width:100%; padding:12px; border:none; border-radius:8px; background:#5a67f2; color:white; font-size:16px; cursor:pointer; transition:all 0.3s ease; margin-bottom:10px;}
+button:hover { background:#4349c4; transform:scale(1.05);}
+.message { text-align:center; font-weight:bold; color:green; margin-top:10px; }
+.project-info { background:#fafafa; padding:10px; border-radius:8px; margin-bottom:15px; }
+.project-info p { margin:5px 0; }
+.files-list { font-size:14px; color:#555; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h2>Edit & View Project</h2>
+
+  <!-- Search -->
+  <input type="text" id="searchName" placeholder="Enter project name to search">
+  <button id="searchBtn">Search</button>
+
+  <!-- Project Details / Edit -->
+  <div id="projectForm" style="display:none; margin-top:15px;">
+    <input type="text" id="projectName" placeholder="Project Name">
+    <textarea id="projectDesc" placeholder="Project Description"></textarea>
+    <input type="file" id="projectFiles" multiple>
+    <div class="project-info" id="projectExtra"></div>
+    <button id="saveBtn">Save</button>
+    <p class="message" id="message"></p>
+  </div>
+</div>
+
+<script>
+// Sample projects
+let projects = [
+  {name:"Website", description:"HTML CSS JS project", files:["index.html","style.css","app.js"], status:"Pending", comment:"No comment yet"},
+  {name:"Portfolio", description:"Portfolio project", files:["portfolio.html","portfolio.css"], status:"Approved", comment:"Good work!"}
+];
+
+let currentIndex = null;
+
+const searchBtn = document.getElementById('searchBtn');
+const searchInput = document.getElementById('searchName');
+const projectForm = document.getElementById('projectForm');
+const projectNameInput = document.getElementById('projectName');
+const projectDescInput = document.getElementById('projectDesc');
+const projectFilesInput = document.getElementById('projectFiles');
+const projectExtra = document.getElementById('projectExtra');
+const saveBtn = document.getElementById('saveBtn');
+const message = document.getElementById('message');
+
+searchBtn.addEventListener('click', () => {
+  const name = searchInput.value.trim().toLowerCase();
+  const index = projects.findIndex(p => p.name.toLowerCase() === name);
+  if(index === -1){
+    alert("Project not found!");
+    projectForm.style.display='none';
+    return;
+  }
+  currentIndex = index;
+  const project = projects[index];
+  projectForm.style.display='block';
+  projectNameInput.value = project.name;
+  projectDescInput.value = project.description;
+  projectFilesInput.value = "";
+  message.textContent = "";
+  // Display status, comment, and files
+  projectExtra.innerHTML = `
+    <p>Status: <strong>${project.status}</strong></p>
+    <p>Comment: ${project.comment}</p>
+    <p class="files-list">Files: ${project.files.join(', ')}</p>
+  `;
+});
+
+saveBtn.addEventListener('click', () => {
+  if(currentIndex===null) return;
+  const newName = projectNameInput.value.trim();
+  const newDesc = projectDescInput.value.trim();
+  const newFiles = projectFilesInput.files;
+
+  if(!newName || !newDesc){
+    alert("Project name and description cannot be empty!");
+    return;
+  }
+
+  projects[currentIndex].name = newName;
+  projects[currentIndex].description = newDesc;
+  if(newFiles.length>0){
+    projects[currentIndex].files = Array.from(newFiles).map(f => f.name);
+  }
+  projects[currentIndex].status = "Pending";
+  projects[currentIndex].comment = "No comment yet";
+
+  message.textContent = "Project updated successfully!";
+  projectExtra.innerHTML = `
+    <p>Status: <strong>${projects[currentIndex].status}</strong></p>
+    <p>Comment: ${projects[currentIndex].comment}</p>
+    <p class="files-list">Files: ${projects[currentIndex].files.join(', ')}</p>
+  `;
+});
+</script>
+</body>
+</html>

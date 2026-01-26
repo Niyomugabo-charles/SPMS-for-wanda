@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <h1>Welcome, Student!</h1>
+    <button id="newProjectBtn">New Project</button>
+
+    <!-- New Project Form (hidden initially) -->
+    <div class="project-form-container" id="projectFormContainer">
+      <form id="projectForm">
+        <h2>Submit New Project</h2>
+
+        <div class="input-group">
+          <input type="text" id="projectName" required>
+          <label for="projectName">Project Name</label>
+        </div>
+
+        <div class="input-group">
+          <textarea id="description" required></textarea>
+          <label for="description">Project Description</label>
+        </div>
+
+        <div class="input-group">
+          <label for="projectFiles" class="file-label">Upload Files (png, rar, html, js, css, docx)</label>
+          <input type="file" id="projectFiles" multiple accept=".png,.rar,.html,.js,.css,.docx" required>
+        </div>
+
+        <button type="submit">Send to Mentor & Admin</button>
+        <p class="message"></p>
+      </form>
+    </div>
+  </div>
+<style>
+    /* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+  background: #f0f4f8;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding-top: 50px;
+  min-height: 100vh;
+}
+
+/* Dashboard Container */
+.dashboard-container {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 15px;
+  box-shadow: 0 10px 20px rgba(5, 190, 14, 0.1);
+  width: 400px;
+  animation: fadeIn 1s ease forwards;
+}
+
+@keyframes fadeIn {
+  from {opacity: 0; transform: translateY(-20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* Button */
+button {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border: none;
+  border-radius: 8px;
+  background: #5a67f2;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover {
+  background: #4349c4;
+  transform: scale(1.05);
+}
+
+/* Project Form */
+.project-form-container {
+  display: none; /* hidden initially */
+  margin-top: 20px;
+  animation: slideDown 0.5s ease forwards;
+}
+
+@keyframes slideDown {
+  from {opacity: 0; transform: translateY(-20px);}
+  to {opacity: 1; transform: translateY(0);}
+}
+
+form h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.input-group {
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.input-group input,
+.input-group textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #ddd;
+  border-radius: 5px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.input-group input:focus,
+.input-group textarea:focus {
+  border-color: #5a67f2;
+  box-shadow: 0 0 10px rgba(90,103,242,0.5);
+}
+
+.input-group label {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  background: white;
+  color: #999;
+  font-size: 12px;
+  padding: 0 5px;
+}
+
+/* File input styling */
+.file-label {
+  display: block;
+  margin-bottom: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* Message */
+.message {
+  text-align: center;
+  margin-top: 10px;
+  font-weight: bold;
+  color: green;
+}
+
+</style>
+  <script>
+const newProjectBtn = document.getElementById('newProjectBtn');
+const projectFormContainer = document.getElementById('projectFormContainer');
+const projectForm = document.getElementById('projectForm');
+const message = document.querySelector('.message');
+
+// Show form when "New Project" is clicked
+newProjectBtn.addEventListener('click', () => {
+  projectFormContainer.style.display = 'block';
+  projectFormContainer.scrollIntoView({ behavior: 'smooth' });
+});
+
+// Handle form submission
+projectForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const projectName = document.getElementById('projectName').value;
+  const description = document.getElementById('description').value;
+  const files = document.getElementById('projectFiles').files;
+
+  if(projectName && description && files.length > 0){
+    message.textContent = `Project "${projectName}" submitted successfully to Mentor & Admin!`;
+    message.style.color = "green";
+
+    // Reset form
+    projectForm.reset();
+    projectFormContainer.style.display = 'none';
+  } else {
+    message.textContent = "Please fill all fields and upload files!";
+    message.style.color = "red";
+  }
+});
+
+  </script>
+</body>
+</html>

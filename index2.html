@@ -1,0 +1,254 @@
+<form action="http://localhost:3000/submit" method="POST">
+
+    <div class="input-box">
+        <i class='bx bx-user'></i>
+        <input type="text" name="fname" required>
+        <label>Full Name</label>
+    </div>
+
+    
+
+    <div class="input-box">
+        <i class='bx bx-envelope'></i>
+        <input type="email" name="email" required>
+        <label>Email</label>
+    </div>
+
+    <div class="input-box">
+        <i class='bx bx-lock-alt'></i>
+        <input type="password" name="password" required>
+        <label>Password</label>
+    </div>
+<div class="input-box">
+      <i class='bx bx-lock-alt'></i>
+     <select name="role" required>
+    <option value="student">Student</option>
+    <option value="mentor">Mentor</option>          
+    <option value="admin">Admin</option>
+  </select>
+  <label>Role</label>
+</div>
+    <button class="btn">SUBMIT</button>
+    -- Loader overlay -->
+<div id="loader-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Content nyamukuru -->
+<div id="content-wrap">
+<div class="center-wrap">
+
+</form>
+<style>
+    /* Loader overlay full-screen */
+#loader-overlay {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: linear-gradient(135deg, #070707, #020202);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  opacity:1;
+  pointer-events:all;
+  transition: opacity 0.5s ease;
+}
+
+/* Spinner */
+.spinner {
+  border:8px solid rgba(207, 144, 9, 0.3);
+  border-top:8px solid #fff;
+  border-radius:50%;
+  width:70px;
+  height:70px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Poppins, sans-serif;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #070707, #974b03);
+    overflow: hidden;
+}
+
+/* glowing animated background */
+body::before {
+    content: "";
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: rgba(207, 95, 4, 0.17);
+    top: -150px;
+    left: -150px;
+    border-radius: 50%;
+    animation: float 6s infinite alternate ease-in-out;
+}
+
+@keyframes float {
+    from { transform: translate(0, 0); }
+    to { transform: translate(80px, 80px); }
+}
+
+/* main form box */
+.form-box {
+    width: 430px;
+    padding: 35px;
+    border-radius: 20px;
+    background: rgba(7, 7, 7, 0.18);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 20px rgba(0,0,0,0.24);
+    animation: drop 0.9s ease;
+}
+
+@keyframes drop {
+    from { transform: translateY(-60px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.form-box h2 {
+    text-align: center;
+    color: #fff;
+    margin-bottom: 25px;
+    font-size: 27px;
+    font-weight: 600;
+}
+
+/* input containers */
+.input-box {
+    position: relative;
+    width: 100%;
+    margin-bottom: 28px;
+}
+
+/* icons */
+.input-box i {
+    position: absolute;
+    left: 10px;
+    top: 14px;
+    color: #fff;
+    font-size: 20px;
+}
+
+/* inputs */
+.input-box input,
+.input-box select {
+    width: 100%;
+    padding: 12px 45px;
+    font-size: 16px;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid #0a0909;
+    outline: none;
+    color: #fff;
+    transition: 0.4s;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.input-box input:focus,
+.input-box select:focus {
+    background: rgba(255,255,255,0.12);
+    border-bottom-color: #000;
+}
+
+/* floating labels */
+.input-box label {
+    position: absolute;
+    left: 45px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #e8e8e8;
+    pointer-events: none;
+    transition: 0.3s;
+}
+
+.input-box input:focus ~ label,
+.input-box input:valid ~ label,
+.input-box select:focus ~ label,
+.input-box select:valid ~ label {
+    top: -10px;
+    font-size: 13px;
+    color: #fff;
+}
+
+/* style for select (dropdown) */
+.select-box select {
+    -webkit-appearance: none;
+    color: #fff;
+}
+.select-box::after {
+    content: "▼";
+    position: absolute;
+    right: 10px;
+    top: 14px;
+    color: #fff;
+    pointer-events: none;
+}
+
+/* submit button */
+.btn {
+    width: 100%;
+    padding: 13px;
+    background: #fff;
+    color: #333;
+    border: none;
+    border-radius: 25px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.4s;
+}
+
+.btn:hover {
+    background: #000;
+    color: #fff;
+    transform: scale(1.07);
+}
+
+</style>
+<script>
+    // Loader JS
+window.addEventListener('load', function(){
+    const loader = document.getElementById('loader-overlay');
+    const content = document.getElementById('content-wrap');
+    setTimeout(function(){
+        loader.style.opacity='0';
+        loader.style.pointerEvents='none';
+        content.style.display='block';
+    },2000); // 2 seconds loader
+});
+
+const regForm = document.getElementById('createAccountForm');
+const regMsg = document.getElementById('regMessage');
+
+regForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const data = Object.fromEntries(new FormData(regForm).entries());
+
+    const res = await fetch('/create-account', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify(data)
+    });
+
+    const result = await res.json();
+    regMsg.innerText = result.message;
+});
+
+</script>

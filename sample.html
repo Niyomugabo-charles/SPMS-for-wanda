@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPMS Login</title>
+
+<style>
+/* Loader overlay */
+#loader-overlay {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, #070707, #020202);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  transition: opacity .5s ease;
+}
+
+.spinner {
+  border:8px solid rgba(207, 144, 9, 0.3);
+  border-top:8px solid #fff;
+  border-radius:50%;
+  width:70px;
+  height:70px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+body {
+  margin:0;
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to right, #0a0a0a, #070707);
+  color: #ff9f43;
+}
+
+.login-container {
+  width:350px;
+  margin:100px auto;
+  padding:30px;
+  background: rgba(0,0,0,0.65);
+  border-radius:12px;
+  text-align:center;
+  box-shadow:0 8px 20px rgba(0,0,0,.6);
+}
+
+.login-container h1 {
+  margin-bottom:20px;
+}
+
+.login-container input,
+.login-container select,
+.login-container button {
+  width:100%;
+  padding:12px;
+  margin:8px 0;
+  border:none;
+  border-radius:8px;
+  outline:none;
+}
+
+select {
+  background:#111;
+  color:#fff;
+}
+
+button {
+  background:#ff6a00;
+  color:#fff;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.3s;
+}
+
+button:hover {
+  background:#ff3d00;
+}
+
+#loginMessage {
+  margin-top:10px;
+  color:red;
+  font-weight:bold;
+}
+#errorMsg{
+  color: red;
+  margin-top: 10px;
+  display: none;
+  font-size: 14px;
+}
+.password-box{
+  position: relative;
+}
+
+#togglePassword{
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  cursor: pointer;
+  transform: translateY(-50%);
+}
+
+body{
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+body.show{
+  opacity: 1;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- Loader -->
+<div id="loader-overlay">
+  <div class="spinner"></div>
+</div>
+
+<div id="content-wrap" style="display:none;">
+  <div class="login-container">
+    <h1>SPMS Login</h1>
+
+    <form id="loginForm">
+    <form id="loginForm">
+  <div class="input-box">
+    <input type="text" id="username" placeholder="Username">
+  </div>
+
+  <div class="input-box password-box">
+    <input type="password" id="password" placeholder="Password">
+    <span id="togglePassword">👁</span>
+  </div>
+  <select id="role" required>
+        <option value="">-- Select Role --</option>
+        <option value="student">Student</option>
+        <option value="mentor">Mentor</option>
+        <option value="admin">Admin</option>
+      </select>
+  <p id="errorMsg"></p>
+
+  <button type="submit">Login</button>
+</form>
+
+      <!-- ROLE -->
+    
+
+  
+      <div id="loginMessage"></div>
+      
+    </form>
+  </div>
+</div>
+
+<script>
+// Loader on page load
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.getElementById('loader-overlay').style.opacity='0';
+    document.getElementById('loader-overlay').style.pointerEvents='none';
+    document.getElementById('content-wrap').style.display='block';
+  },2000);
+});
+
+// Login logic
+document.getElementById('loginForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+
+  const role = document.getElementById('role').value;
+  const msg = document.getElementById('loginMessage');
+  const loadingText = document.getElementById('loadingText');
+
+  if(!role){
+    msg.innerText = "Please select a role";
+    return;
+  }
+
+  msg.innerText = "";
+  loadingText.style.display = "block";
+
+  // Erekana loader overlay
+  const loader = document.getElementById('loader-overlay');
+  loader.style.opacity = "1";
+  loader.style.pointerEvents = "all";
+
+  // Simulate login process (1.5s)
+  setTimeout(()=>{
+    if(role === "student"){
+      window.location.href = "student.html";
+    }
+    if(role === "mentor"){
+      window.location.href = "mentor.html";
+    }
+    if(role === "admin"){
+      window.location.href = "dashboard.html";
+    }
+  },1500);
+});
+document.getElementById("loginForm").addEventListener("submit", function(e){
+  e.preventDefault();
+
+  const user = document.getElementById("username").value;
+  const pass = document.getElementById("password").value;
+  const error = document.getElementById("errorMsg");
+
+  if(user === "admin" && pass === "1234"){
+    error.style.display = "none";
+    startTransition("dashboard.html");
+  } else {
+    error.innerText = "❌ Username or Password was encorrect💘💘";
+    error.style.display = "block";
+  }
+
+  if(user === "mentor" && pass === "1234"){
+    error.style.display = "none";
+    startTransition("mentor.html");
+  } else {
+    error.innerText = "❌ Username or Password was encorrect💘💘";
+    error.style.display = "block";
+  }
+  if(user === "student" && pass === "1234"){
+    error.style.display = "none";
+    startTransition("student.html");
+  } else {
+    error.innerText = "❌ Username or Password was encorrect💘💘";
+    error.style.display = "block";
+  }
+});
+
+const toggle = document.getElementById("togglePassword");
+const password = document.getElementById("password");
+
+toggle.addEventListener("click", ()=>{
+  if(password.type === "password"){
+    password.type = "text";
+    toggle.innerText = "🙈";
+  } else {
+    password.type = "password";
+    toggle.innerText = "👁";
+  }
+});
+
+window.onload = () => {
+  document.body.classList.add("show");
+};
+
+function startTransition(page){
+  document.body.classList.remove("show");
+  setTimeout(()=>{
+    window.location.href = page;
+  },600);
+}
+</script>
+
+
+
+
+
+</body>
+</html>

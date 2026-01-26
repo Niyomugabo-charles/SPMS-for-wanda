@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mentor Dashboard</title>
+    <link rel="stylesheet" href="mentor.css">
+</head>
+<body>
+
+    <header>
+        <h1>Mentor Dashboard</h1>
+        <p>Guide and manage students' projects & progress</p>
+    </header>
+ 
+    <div class="container">
+
+        <!-- View Student Projects -->
+        <div class="card">
+            <h2>View Student Projects</h2>
+            <p>See all submitted projects by students and review them.</p>
+            <button onclick="location.href='viewstudentproject.html'">View Submissions</button>
+        </div>
+
+        <!-- Give Feedback -->
+        <div class="card">
+            <h2>Give Feedback</h2>
+            <p>Send detailed feedback, score, or corrections to students.</p>
+            <button onclick="location.href='givefeedback.html'">Give Feedback</button>
+        </div>
+
+         <!-- Loader overlay -->
+<div id="loader-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Content nyamukuru -->
+<div id="content-wrap">
+<div class="center-wrap">
+
+        <!-- Manage Tasks -->
+        <div class="card">
+            <h2>Manage Tasks</h2>
+            <p>Create, edit, or assign tasks to students.</p>
+            <button onclick="location.href='download.html'">Manage Tasks</button>
+        </div>
+          <br><br><br><br><br><br><br><br><br>
+   <!-- Schedule Meetings -->
+        <div class="card">
+            <h2>private Meetings</h2>
+            <p>Plan online or physical meetings with students.</p>
+            <button onclick="location.href='bb.html'">Meeting to admin</button>
+        </div>
+        <br><br><br><br><br><br><br><br><br>
+        <!-- Chat With Admin -->
+        <div class="card wide">
+            <h2>Communicate With Admin</h2>
+            <p>Send reports, raise issues, or request resources from admin.</p>
+            <button onclick="location.href='meet.html'">meet with all</button>
+        </div>
+
+    </div>
+
+<script>
+        window.addEventListener('load', function(){
+    const loader = document.getElementById('loader-overlay');
+    const content = document.getElementById('content-wrap');
+    setTimeout(function(){
+        loader.style.opacity='0';
+        loader.style.pointerEvents='none';
+        content.style.display='block';
+    },2000); // 2 seconds loader
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin User Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI, Arial, sans-serif;}
+    body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
+    .container{width:100%;max-width:1200px;background:rgba(0,0,0,0.85);border-radius:20px;padding:20px;box-shadow:0 15px 40px rgba(0,0,0,0.6);}
+    h2{text-align:center;margin-bottom:20px;}
+    table{width:100%;border-collapse:collapse;}
+    th, td{padding:12px;text-align:left;border-bottom:1px solid #444;}
+    th{background:#1f2937;}
+    tr:hover{background:rgba(255,255,255,0.05);}
+    button.manage{background:#2563eb;color:white;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;}
+    button.manage:hover{background:#1d4ed8;}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>🛠 Admin - Manage Users</h2>
+  <table id="usersTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Role</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Users will be dynamically generated -->
+    </tbody>
+  </table>
+</div>
+<script>
+// Sample users data
+const users=[
+  {id:1,fname:'John',lname:'Doe',role:'Student'},
+  {id:2,fname:'Alice',lname:'Smith',role:'Student'},
+  {id:3,fname:'Bob',lname:'Mentor',role:'Mentor'},
+  {id:4,fname:'Eve',lname:'Admin',role:'Admin'}
+];
+
+const tbody=document.getElementById('usersTable').querySelector('tbody');
+
+function renderUsers(){
+  tbody.innerHTML='';
+  users.forEach(user=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${user.id}</td>
+      <td>${user.fname}</td>
+      <td>${user.lname}</td>
+      <td>${user.role}</td>
+      <td><button class='manage' onclick='editUser(${user.id})'>Edit</button> <button class='manage' onclick='deleteUser(${user.id})'>Delete</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function editUser(id){
+  const user=users.find(u=>u.id===id);
+  if(!user) return;
+  const newF=prompt('First Name:',user.fname);
+  const newL=prompt('Last Name:',user.lname);
+  const newRole=prompt('Role (Student/Mentor/Admin):',user.role);
+  if(newF) user.fname=newF;
+  if(newL) user.lname=newL;
+  if(newRole) user.role=newRole;
+  renderUsers();
+}
+
+function deleteUser(id){
+  if(confirm('Are you sure to delete this user?')){
+    const index=users.findIndex(u=>u.id===id);
+    if(index!==-1){users.splice(index,1); renderUsers();}
+  }
+}
+
+renderUsers();
+</script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Admin Announcements & Media</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI, Arial, sans-serif;}
+body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
+.container{width:100%;max-width:1000px;background:rgba(0,0,0,0.95);border-radius:20px;padding:25px;box-shadow:0 15px 40px rgba(0,0,0,0.6);margin-bottom:30px;}
+h2{text-align:center;margin-bottom:20px;font-size:28px;}
+.input-area{display:flex;flex-wrap:wrap;justify-content:center;margin-bottom:20px;gap:10px;align-items:center;}
+input, select, textarea{padding:10px 12px;border-radius:10px;border:none;outline:none;font-size:16px;}
+textarea{resize:none;flex:1;}
+button.send{background:#16a34a;color:white;border:none;padding:10px 16px;border-radius:10px;cursor:pointer;font-size:18px;transition:0.3s;display:flex;align-items:center;gap:6px;}
+button.send:hover{background:#15803d;}
+ul{list-style:none;width:100%;}
+li{background:rgba(255,255,255,0.05);padding:12px 15px;margin-bottom:12px;border-radius:12px;display:flex;flex-direction:column;gap:8px;font-size:16px;box-shadow:0 2px 5px rgba(0,0,0,0.3);}
+.mentor{border-left:5px solid #16a34a;}
+.student{border-left:5px solid #2563eb;}
+.announcement-content{display:flex;flex-direction:column;gap:8px;}
+.media-preview{display:flex;gap:10px;flex-wrap:wrap;}
+.media-preview img, .media-preview video, .media-preview audio{max-width:150px;max-height:100px;border-radius:8px;}
+</style>
+</head>
+<body>
+<div class="container">
+<h2>📢 Admin - Announcements & Media</h2>
+<div class="input-area">
+  <textarea id="announcementInput" placeholder="Type your announcement here..." rows="2"></textarea>
+  <select id="announcementType">
+    <option value="Mentor">Mentor</option>
+    <option value="Student">Student</option>
+  </select>
+  <input type="file" id="mediaInput" multiple accept="image/*,video/*,audio/*">
+  <button class="send" onclick="addAnnouncement()"><i class='bx bx-send'></i> Send</button>
+</div>
+<ul id="announcementsList"></ul>
+</div>
+<script>
+let announcements=[];
+const list=document.getElementById('announcementsList');
+const input=document.getElementById('announcementInput');
+const typeSelect=document.getElementById('announcementType');
+const mediaInput=document.getElementById('mediaInput');
+
+function renderAnnouncements(){
+  list.innerHTML='';
+  announcements.forEach(a=>{
+    const li=document.createElement('li');
+    li.className=a.type==='Mentor'?'mentor':'student';
+    const contentDiv=document.createElement('div');
+    contentDiv.className='announcement-content';
+    const textSpan=document.createElement('span');
+    textSpan.textContent=`[${a.type}] ${a.message}`;
+    contentDiv.appendChild(textSpan);
+
+    if(a.media && a.media.length>0){
+      const mediaDiv=document.createElement('div');
+      mediaDiv.className='media-preview';
+      a.media.forEach(file => {
+        const ext=file.name.split('.').pop().toLowerCase();
+        if(['png','jpg','jpeg','gif'].includes(ext)){
+          const img=document.createElement('img');
+          img.src=URL.createObjectURL(file);
+          mediaDiv.appendChild(img);
+        } else if(['mp4','webm','ogg'].includes(ext)){
+          const video=document.createElement('video');
+          video.src=URL.createObjectURL(file);
+          video.controls=true;
+          mediaDiv.appendChild(video);
+        } else if(['mp3','wav','ogg'].includes(ext)){
+          const audio=document.createElement('audio');
+          audio.src=URL.createObjectURL(file);
+          audio.controls=true;
+          mediaDiv.appendChild(audio);
+        }
+      });
+      contentDiv.appendChild(mediaDiv);
+    }
+
+    li.appendChild(contentDiv);
+    list.appendChild(li);
+  });
+}
+
+function addAnnouncement(){
+  const message=input.value.trim();
+  const type=typeSelect.value;
+  const files=Array.from(mediaInput.files);
+  if(message==='') return;
+  announcements.push({message,type,media:files});
+  input.value='';
+  mediaInput.value='';
+  renderAnnouncements();
+}
+
+renderAnnouncements();
+</script>
+</body>
+</html>

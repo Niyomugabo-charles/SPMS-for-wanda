@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+  <div class="dashboard-container">
+    <h1>Welcome, Student!</h1>
+    <button id="newProjectBtn">New Project</button>
+
+    <!-- New Project Form -->
+    <div class="project-form-container" id="projectFormContainer">
+      <form id="projectForm">
+        <h2>Submit New Project</h2>
+
+        <div class="input-group">
+          <input type="text" id="projectName" required>
+          <label for="projectName">Project Name</label>
+        </div>
+
+        <div class="input-group">
+          <textarea id="description" required></textarea>
+          <label for="description">Project Description</label>
+        </div>
+
+        <div class="input-group">
+          <label for="projectFiles" class="file-label">Upload Files (png, rar, html, js, css, docx)</label>
+          <input type="file" id="projectFiles" multiple accept=".png,.rar,.html,.js,.css,.docx" required>
+        </div>
+
+        <button type="submit">Send to Mentor & Admin</button>
+        <p class="message"></p>
+      </form>
+    </div>
+
+    <!-- Project Results -->
+    <div class="project-results-container" id="projectResultsContainer">
+      <h2>Your Projects</h2>
+      <ul id="projectList"></ul>
+    </div>
+  </div>
+<style>
+    /* Reset & body */
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif;}
+body { background:#f0f4f8; display:flex; justify-content:center; align-items:flex-start; padding-top:50px; min-height:100vh; }
+
+/* Container */
+.dashboard-container { background:white; padding:30px 40px; border-radius:15px; box-shadow:0 10px 20px rgba(0,0,0,0.1); width:450px; animation: fadeIn 1s ease forwards;}
+@keyframes fadeIn { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
+
+h1, h2 { text-align:center; color:#333; margin-bottom:20px; }
+
+/* Button */
+button { width:100%; padding:12px; margin:10px 0; border:none; border-radius:8px; background:#5a67f2; color:white; font-size:16px; cursor:pointer; transition:all 0.3s ease;}
+button:hover { background:#4349c4; transform:scale(1.05); }
+
+/* Project Form */
+.project-form-container { display:none; margin-top:20px; animation: slideDown 0.5s ease forwards;}
+@keyframes slideDown { from {opacity:0; transform:translateY(-20px);} to {opacity:1; transform:translateY(0);} }
+
+.input-group { position:relative; margin-bottom:20px; }
+.input-group input, .input-group textarea { width:100%; padding:10px; font-size:16px; border:2px solid #ddd; border-radius:5px; outline:none; transition:all 0.3s ease; }
+.input-group input:focus, .input-group textarea:focus { border-color:#5a67f2; box-shadow:0 0 10px rgba(90,103,242,0.5); }
+
+.input-group label { position:absolute; top:-10px; left:10px; background:white; color:#999; font-size:12px; padding:0 5px; }
+
+/* File input styling */
+.file-label { display:block; margin-bottom:5px; font-size:14px; color:#555; }
+
+/* Message */
+.message { text-align:center; margin-top:10px; font-weight:bold; color:green; }
+
+/* Project Results List */
+.project-results-container { margin-top:30px; }
+#projectList { list-style:none; }
+.project-item { padding:15px; margin-bottom:10px; border:1px solid #ddd; border-radius:8px; background:#fafafa; transition:all 0.3s ease;}
+.project-item:hover { box-shadow:0 5px 15px rgba(0,0,0,0.1); }
+.project-item h3 { margin-bottom:5px; }
+.project-item p { margin-bottom:5px; color:#555; }
+.status { font-weight:bold; }
+.comment { font-style:italic; color:#333; }
+
+</style>
+  <script>
+const newProjectBtn = document.getElementById('newProjectBtn');
+const projectFormContainer = document.getElementById('projectFormContainer');
+const projectForm = document.getElementById('projectForm');
+const projectList = document.getElementById('projectList');
+const message = document.querySelector('.message');
+
+let projects = []; // Array to store projects
+
+// Show project form
+newProjectBtn.addEventListener('click', () => {
+  projectFormContainer.style.display = 'block';
+  projectFormContainer.scrollIntoView({ behavior: 'smooth' });
+});
+
+// Submit project
+projectForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  const projectName = document.getElementById('projectName').value;
+  const description = document.getElementById('description').value;
+  const files = document.getElementById('projectFiles').files;
+
+  if(projectName && description && files.length > 0){
+    // Simulate result & mentor comment
+    const project = {
+      name: projectName,
+      description: description,
+      status: "Pending",
+      comment: "No comment yet",
+      files: Array.from(files).map(f => f.name)
+    };
+    projects.push(project);
+
+    message.textContent = `Project "${projectName}" submitted successfully!`;
+    message.style.color = "green";
+
+    // Reset form
+    projectForm.reset();
+    projectFormContainer.style.display = 'none';
+
+    renderProjects();
+  } else {
+    message.textContent = "Please fill all fields and upload files!";
+    message.style.color = "red";
+  }
+});
+
+// Render projects to dashboard
+function renderProjects(){
+  projectList.innerHTML = "";
+  projects.forEach((proj, index) => {
+    const li = document.createElement('li');
+    li.className = "project-item";
+    li.innerHTML = `
+      <h3>${proj.name}</h3>
+      <p>${proj.description}</p>
+      <p class="status">Status: ${proj.status}</p>
+      <p class="comment">Comment: ${proj.comment}</p>
+      <p>Files: ${proj.files.join(', ')}</p>
+      <button onclick="simulateMentorReview(${index})">Simulate Mentor Review</button>
+    `;
+    projectList.appendChild(li);
+  });
+}
+
+// Simulate mentor/admin adding result/comment
+function simulateMentorReview(index){
+  const statuses = ["Approved", "Needs Improvement", "Pending"];
+  const comments = [
+    "Good work, well done!",
+    "Please improve your code structure.",
+    "Waiting for additional files."
+  ];
+  projects[index].status = statuses[Math.floor(Math.random()*statuses.length)];
+  projects[index].comment = comments[Math.floor(Math.random()*comments.length)];
+  renderProjects();
+}
+
+  </script>
+</body>
+</html>

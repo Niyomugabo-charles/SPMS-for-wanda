@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+    <header>
+        <h1>Admin Dashboard</h1>
+        <p>Control and manage all system operations</p>
+    </header>
+<!-- Loader overlay -->
+<div id="loader-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Content nyamukuru -->
+<div id="content-wrap">
+<div class="center-wrap">
+
+    <div class="container">
+
+        <!-- Manage Users -->
+        <div class="card">
+            <h2>Manage Users</h2>
+            <p>Add, update or remove students and mentors.</p>
+            <button onclick="location.href='manageruser.html'">Open</button>
+        </div>
+
+        <!-- Manage Projects -->
+        <div class="card">
+            <h2>Project Management</h2>
+            <p>View all projects, approve or reject submissions.</p>
+            <button onclick="location.href='projectmanagement.html'">Manage</button>
+        </div>
+
+        <!-- Task Management -->
+        <div class="card">
+            <h2>Task Control</h2>
+            <p>Create tasks and assign them to mentors or students.</p>
+            <button onclick="location.href='taskcontrol.html'">Go</button>
+        </div>
+
+        <!-- Announcements -->
+        <div class="card">
+            <h2>Announcements</h2>
+            <p>Publish system-wide updates or notifications.</p>
+            <button onclick="location.href='anouncement.html'">Publish</button>
+        </div>
+
+        <!-- Reports -->
+        <div class="card">
+            <h2>Reports & Statistics</h2>
+            <p>Track system performance, user activity and project progress.</p>
+            <button onclick="location.href='Statistics.html'">View Reports</button>
+        </div>
+
+        <!-- Communication -->
+        <div class="card wide">
+            <h2>Communication Center</h2>
+            <p>Chat with mentors or students, solve issues and respond to messages.</p>
+            <button onclick="location.href='ad-mentor.html'">Open Chat</button>
+        </div>
+
+    </div>
+<style>
+    body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #000000;
+    color: white;
+}
+
+header {
+    text-align: center;
+    padding: 30px;
+    background: #c25903;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+
+header h1 {
+    font-size: 2.7rem;
+    margin: 0;
+}
+
+header p {
+    opacity: 0.7;
+    font-size: 1.1rem;
+}
+
+.container {
+    margin: 40px;
+    display: grid;
+    gap: 25px;
+    grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+}
+
+.card {
+    background: #c26005;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.45);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    background: #b67007;
+}
+
+.card h2 {
+    margin-bottom: 12px;
+    font-size: 1.5rem;
+}
+
+button {
+    background: #000000;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 12px;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.07);
+    background: #c96d03;
+}
+
+.wide {
+    grid-column: span 2;
+}
+
+@media (max-width: 700px) {
+    .wide {
+        grid-column: span 1;
+    }
+}
+/* Loader overlay full-screen */
+#loader-overlay {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: linear-gradient(135deg, #070707, #020202);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  opacity:1;
+  pointer-events:all;
+  transition: opacity 0.5s ease;
+}
+
+/* Spinner */
+.spinner {
+  border:8px solid rgba(207, 144, 9, 0.3);
+  border-top:8px solid #fff;
+  border-radius:50%;
+  width:70px;
+  height:70px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+</style>
+<script>
+       window.addEventListener('load', function(){
+    const loader = document.getElementById('loader-overlay');
+    const content = document.getElementById('content-wrap');
+    setTimeout(function(){
+        loader.style.opacity='0';
+        loader.style.pointerEvents='none';
+        content.style.display='block';
+    },2000); // 2 seconds loader
+});
+</script>
+</body>
+</html>

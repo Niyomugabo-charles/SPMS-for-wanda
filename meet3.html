@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mentor & Admin Private Meeting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family:Arial, Helvetica, sans-serif;
+    }
+
+    body{
+      background:linear-gradient(135deg,#141e30,#243b55);
+      color:#fff;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+    }
+
+    .private-meeting{
+      width:100%;
+      max-width:900px;
+      background:rgba(0,0,0,0.75);
+      border-radius:20px;
+      padding:20px;
+      box-shadow:0 10px 30px rgba(0,0,0,0.6);
+    }
+
+    .header{
+      text-align:center;
+      margin-bottom:15px;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    .videos{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:15px;
+    }
+
+    .video-box{
+      position:relative;
+      background:#000;
+      border-radius:15px;
+      overflow:hidden;
+      height:300px;
+    }
+
+    .video-box video{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
+
+    .video-label{
+      position:absolute;
+      bottom:8px;
+      left:8px;
+      background:rgba(0,0,0,0.6);
+      padding:6px 12px;
+      border-radius:12px;
+      font-size:14px;
+    }
+
+    .controls{
+      display:flex;
+      justify-content:center;
+      gap:15px;
+      margin-top:20px;
+    }
+
+    .controls button{
+      border:none;
+      background:#00a8ff;
+      color:white;
+      padding:12px 18px;
+      border-radius:50px;
+      cursor:pointer;
+      transition:0.3s;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      font-weight:bold;
+    }
+
+    .controls button:hover{
+      background:#0077b6;
+      transform:scale(1.05);
+    }
+
+    .controls .end{
+      background:#e63946;
+    }
+
+    .controls .end:hover{
+      background:#b02a37;
+    }
+  </style>
+</head>
+<body>
+
+<div class="private-meeting">
+  <div class="header">🔒 Private Meeting : Mentor & Admin</div>
+
+  <div class="videos">
+    <div class="video-box">
+      <video id="mentorVideo" autoplay muted></video>
+      <div class="video-label">Mentor</div>
+    </div>
+
+    <div class="video-box">
+      <video id="adminVideo" autoplay></video>
+      <div class="video-label">Admin</div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <button onclick="startPrivateMeeting()"><i class='bx bx-video'></i> Start</button>
+    <button onclick="toggleMute()"><i class='bx bx-microphone'></i> Mute</button>
+    <button onclick="toggleCamera()"><i class='bx bx-camera'></i> Camera</button>
+    <button class="end" onclick="endMeeting()"><i class='bx bx-phone-off'></i> End</button>
+  </div>
+</div>
+
+<script>
+let privateStream;
+let audioOn = true;
+let videoOn = true;
+
+function startPrivateMeeting(){
+  navigator.mediaDevices.getUserMedia({video:true, audio:true})
+  .then(stream => {
+    privateStream = stream;
+    document.getElementById('mentorVideo').srcObject = stream;
+  })
+  .catch(err => alert('Camera cyangwa Microphone ntibashoboye gukora'));
+}
+
+function toggleMute(){
+  if(!privateStream) return;
+  audioOn = !audioOn;
+  privateStream.getAudioTracks()[0].enabled = audioOn;
+}
+
+function toggleCamera(){
+  if(!privateStream) return;
+  videoOn = !videoOn;
+  privateStream.getVideoTracks()[0].enabled = videoOn;
+}
+
+function endMeeting(){
+  if(privateStream){
+    privateStream.getTracks().forEach(track => track.stop());
+  }
+  document.getElementById('mentorVideo').srcObject = null;
+}
+</script>
+
+</body>
+</html>

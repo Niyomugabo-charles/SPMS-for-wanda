@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Task Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI, Arial, sans-serif;}
+    body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:20px;}
+    .container{width:100%;max-width:1200px;background:rgba(0,0,0,0.85);border-radius:20px;padding:20px;box-shadow:0 15px 40px rgba(0,0,0,0.6);margin-bottom:30px;}
+    h2{text-align:center;margin-bottom:20px;}
+    table{width:100%;border-collapse:collapse;}
+    th, td{padding:12px;text-align:left;border-bottom:1px solid #444;}
+    th{background:#1f2937;}
+    tr:hover{background:rgba(255,255,255,0.05);}
+    button.manage{background:#2563eb;color:white;border:none;padding:6px 12px;border-radius:8px;cursor:pointer;}
+    button.manage:hover{background:#1d4ed8;}
+    button.add{background:#16a34a;margin-bottom:10px;}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h2>📝 Admin - Task Management</h2>
+  <button class="manage add" onclick="addTask()">➕ Add New Task</button>
+  <table id="tasksTable">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Task Description</th>
+        <th>Assigned To</th>
+        <th>Deadline</th>
+        <th>Status</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Tasks will be dynamically generated -->
+    </tbody>
+  </table>
+</div>
+<script>
+// Sample tasks data
+let tasks=[
+  {id:1,desc:'Design login page',assigned:'John Doe',deadline:'2025-11-25',status:'In Progress'},
+  {id:2,desc:'Setup database',assigned:'Alice Smith',deadline:'2025-11-28',status:'Pending'},
+  {id:3,desc:'Implement dashboard',assigned:'Bob Mentor',deadline:'2025-12-01',status:'Completed'}
+];
+
+const tbody=document.getElementById('tasksTable').querySelector('tbody');
+
+function renderTasks(){
+  tbody.innerHTML='';
+  tasks.forEach(task=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`
+      <td>${task.id}</td>
+      <td>${task.desc}</td>
+      <td>${task.assigned}</td>
+      <td>${task.deadline}</td>
+      <td>${task.status}</td>
+      <td>
+        <button class='manage' onclick='editTask(${task.id})'>Edit</button>
+        <button class='manage' onclick='deleteTask(${task.id})'>Delete</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function addTask(){
+  const desc=prompt('Task Description:');
+  const assigned=prompt('Assigned To:');
+  const deadline=prompt('Deadline (YYYY-MM-DD):');
+  const status=prompt('Status (Pending/In Progress/Completed):');
+  if(desc && assigned && deadline && status){
+    const id=tasks.length>0?tasks[tasks.length-1].id+1:1;
+    tasks.push({id,desc,assigned,deadline,status});
+    renderTasks();
+  }
+}
+
+function editTask(id){
+  const task=tasks.find(t=>t.id===id);
+  if(!task) return;
+  const desc=prompt('Task Description:',task.desc);
+  const assigned=prompt('Assigned To:',task.assigned);
+  const deadline=prompt('Deadline:',task.deadline);
+  const status=prompt('Status:',task.status);
+  if(desc) task.desc=desc;
+  if(assigned) task.assigned=assigned;
+  if(deadline) task.deadline=deadline;
+  if(status) task.status=status;
+  renderTasks();
+}
+
+function deleteTask(id){
+  if(confirm('Are you sure to delete this task?')){
+    const index=tasks.findIndex(t=>t.id===id);
+    if(index!==-1){tasks.splice(index,1); renderTasks();}
+  }
+}
+
+renderTasks();
+</script>
+</body>
+</html>

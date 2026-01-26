@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Home Page</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:radial-gradient(circle at top,#1a1205 0%,#000 60%,#000 100%);color:#e8d9b5;font-family:'Poppins',sans-serif}
+
+/* Loader overlay full-screen */
+#loader-overlay {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: linear-gradient(135deg, #070707, #020202);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  opacity:1;
+  pointer-events:all;
+  transition: opacity 0.5s ease;
+}
+
+/* Spinner */
+.spinner {
+  border:8px solid rgba(207, 144, 9, 0.3);
+  border-top:8px solid #fff;
+  border-radius:50%;
+  width:70px;
+  height:70px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Center layout */
+.center-wrap{
+    min-height:100vh;
+    display:grid;
+    place-items:center;
+    position:relative;
+    overflow:hidden;
+}
+
+/* Logo stays untouched */
+.logo-only{
+    position:relative;
+    z-index:3;
+}
+.logo-only img{
+    height:120px;
+    width:auto;
+    display:block;
+    filter: drop-shadow(0 0 22px rgba(200,155,60,0.75));
+}
+
+/* Circular rotating text */
+.circle-text{
+    position:absolute;
+    z-index:1;
+    animation: spin 18s linear infinite;
+}
+.circle-text.outer{width:360px;height:360px;}
+.circle-text.inner{width:260px;height:260px;}
+.circle-text svg{width:100%;height:100%}
+.circle-text text{letter-spacing:2px}
+
+@keyframes spin{
+    from{transform:rotate(0deg)}
+    to{transform:rotate(360deg)}
+}
+
+/* Orbit buttons */
+.orbit-buttons{
+    position:absolute;
+    width:520px;
+    height:520px;
+    display:grid;
+    place-items:center;
+    animation: orbit 22s linear infinite;
+    z-index:2;
+}
+.orbit-buttons:hover {
+    animation-play-state: paused;
+}
+@keyframes orbit{
+    from{transform:rotate(0deg)}
+    to{transform:rotate(360deg)}
+}
+.orbit-btn{
+    position:absolute;
+    padding:12px 20px;
+    border-radius:999px;
+    background:linear-gradient(135deg,#c89b3c,#8a5a12);
+    color:#000;
+    text-decoration:none;
+    font-weight:800;
+    letter-spacing:1px;
+    box-shadow:0 8px 25px rgba(200,155,60,0.6);
+    animation: pulse 2.5s ease-in-out infinite;
+    transition:0.3s;
+}
+.orbit-btn:hover{
+    animation-play-state: paused;
+    transform:scale(1.15);
+    box-shadow:0 14px 40px rgba(200,155,60,0.95);
+}
+@keyframes pulse{
+    0%,100%{transform:scale(1)}
+    50%{transform:scale(1.08)}
+}
+
+/* Button positions */
+.b1{top:0;left:50%;transform:translateX(-50%)}
+.b2{right:0;top:50%;transform:translateY(-50%)}
+.b3{bottom:0;left:50%;transform:translateX(-50%)}
+.b4{left:0;top:50%;transform:translateY(-50%)}
+
+/* Hide content initially */
+#content-wrap{display:none;}
+</style>
+</head>
+<body>
+
+<!-- Loader overlay -->
+<div id="loader-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Content nyamukuru -->
+<div id="content-wrap">
+<div class="center-wrap">
+
+    <!-- Outer rotating text -->
+    <div class="circle-text outer">
+        <svg viewBox="0 0 300 300">
+            <defs>
+                <path id="outerPath" d="M150,150 m-130,0 a130,130 0 1,1 260,0 a130,130 0 1,1 -260,0" />
+            </defs>
+            <text fill="#c89b3c" font-size="14" font-weight="600">
+                <textPath href="#outerPath">
+                    WELCOMI IN WANDA LTD • ISOKO Y'UBUHANGA N'UBWENGE • MW'ISI Y'IKORANABUHANGA •
+                </textPath>
+            </text>
+        </svg>
+    </div>
+
+    <!-- Inner rotating text -->
+    <div class="circle-text inner">
+        <svg viewBox="0 0 260 260">
+            <defs>
+                <path id="innerPath" d="M130,130 m-95,0 a95,95 0 1,0 190,0 a95,95 0 1,0 -190,0" />
+            </defs>
+            <text fill="#e8d9b5" font-size="12" font-weight="500">
+                <textPath href="#innerPath">
+                    WANDA LTD • TECHNOLOGY • INNOVATION • DIGITAL FUTURE •
+                </textPath>
+            </text>
+        </svg>
+    </div>
+
+    <!-- Logo -->
+    <div class="logo-only intro-logo">
+        <img src="C:\Users\Chales\Downloads\001.png" alt="WANDA LTD Logo">
+    </div>
+
+    <!-- Floating buttons -->
+    <div class="orbit-buttons">
+        <a href="sample.html" class="orbit-btn b1">Login</a>
+        <a href="index2.html" class="orbit-btn b2">Create Account</a>
+        <a href="portif_copilot.html" class="orbit-btn b3">Portfolio</a>
+        <a href="contact.html" class="orbit-btn b4">Contact</a>
+    </div>
+
+</div>
+</div>
+
+<script>
+// Loader JS
+window.addEventListener('load', function(){
+    const loader = document.getElementById('loader-overlay');
+    const content = document.getElementById('content-wrap');
+    setTimeout(function(){
+        loader.style.opacity='0';
+        loader.style.pointerEvents='none';
+        content.style.display='block';
+    },2000); // 2 seconds loader
+});
+</script>
+
+</body>
+</html>

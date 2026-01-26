@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charles Portfolio</title>
+<style>
+  * { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin:0; padding:0; }
+  body { scroll-behavior: smooth; background: #f0f2f5; color: #333; }
+  header { background: linear-gradient(135deg, #6a11cb, #2575fc); color: white; padding: 2rem 1rem; text-align: center; }
+  header h1 { font-size: 2.5rem; margin-bottom: 0.3rem; }
+  header p { font-size: 1.2rem; opacity: 0.8; }
+
+  nav { position: sticky; top:0; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 1000; }
+  nav ul { display: flex; justify-content: center; list-style: none; padding: 0.5rem; margin:0; flex-wrap: wrap;}
+  nav ul li { margin: 0 1rem; }
+  nav ul li a { text-decoration: none; color: #333; font-weight: bold; transition: 0.3s; }
+  nav ul li a:hover { color: #2575fc; }
+
+  section { padding: 3rem 1rem; max-width: 1200px; margin: 0 auto; }
+  section h2 { text-align: center; margin-bottom: 2rem; font-size: 2rem; color: #2575fc; }
+
+  /* Profile */
+  .profile { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2rem; text-align: center; }
+  .profile img { width: 200px; height: 200px; border-radius: 50%; object-fit: cover; border: 4px solid #2575fc; transition: transform 0.3s; }
+  .profile img:hover { transform: scale(1.05); }
+  .profile div { max-width: 500px; }
+
+  /* About Me */
+  .about p { line-height: 1.6; }
+
+  /* Projects */
+  .projects-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+  .project-card { background: #fff; border-radius: 12px; padding: 1rem; box-shadow: 0 6px 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
+  .project-card:hover { transform: translateY(-5px); }
+  .project-card img { width: 100%; border-radius: 8px; margin-bottom: 0.8rem; }
+  .project-card h3 { margin-bottom: 0.5rem; color: #6a11cb; }
+  .project-card p { font-size: 0.95rem; margin-bottom: 0.5rem; }
+  .project-card a { text-decoration: none; display:inline-block; padding:0.5rem 0.8rem; border-radius: 6px; background: linear-gradient(135deg, #ff6a00, #ee0979); color: white; font-weight: bold; transition: 0.3s; }
+  .project-card a:hover { transform: scale(1.05); }
+
+  /* Collaborators */
+  .team-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; }
+  .team-card { background: #fff; border-radius: 12px; padding: 1rem; text-align: center; box-shadow: 0 6px 15px rgba(0,0,0,0.1); transition: transform 0.3s; }
+  .team-card:hover { transform: translateY(-5px); }
+  .team-card img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border:3px solid #2575fc; margin-bottom:0.5rem; }
+  .team-card h4 { margin-bottom:0.3rem; color: #2575fc; }
+  .team-card p { font-size:0.9rem; opacity:0.8; }
+
+  /* Skills */
+  .skills-container { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center; }
+  .skill-badge { background: #6a11cb; color: white; padding: 0.5rem 0.8rem; border-radius: 12px; font-weight: bold; transition:0.3s; }
+  .skill-badge:hover { transform: scale(1.05); }
+
+  /* Contact */
+  .contact p { text-align: center; line-height: 1.6; }
+  .contact a { color: #2575fc; text-decoration: none; font-weight: bold; }
+  .contact a:hover { text-decoration: underline; }
+
+  @media(max-width:768px){ .profile { flex-direction: column; } }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Charles Portfolio</h1>
+  <p>Fullstack Developer | Project Management | Web & Software Enthusiast</p>
+</header>
+
+<nav>
+  <ul>
+    <li><a href="#about">About Me</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#team">Collaborators</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section id="about">
+  <h2>About Me</h2>
+  <div class="profile">
+    <img src="https://via.placeholder.com/200" alt="Charles Photo">
+    <div class="about">
+      <p>Hello! My name is Charles. I am a dedicated software and web developer with experience in project management, system development, and modern web technologies including HTML, CSS, JavaScript. I have a strong interest in creating interactive and user-friendly applications. Over time, I have developed multiple projects, including task management systems, student project portals, and interactive dashboards. I enjoy collaborating with talented people and continuously learning new technologies.</p>
+    </div>
+  </div>
+</section>
+
+<section id="projects">
+  <h2>Projects</h2>
+  <div class="projects-container">
+    <div class="project-card">
+      <img src="https://via.placeholder.com/300x180" alt="Manage Tasks">
+      <h3>Manage Tasks System</h3>
+      <p>A modern task management system with add/edit/delete, filtering, status update, and download tasks features.</p>
+      <a href="#" download>Download Project</a>
+    </div>
+    <div class="project-card">
+      <img src="https://via.placeholder.com/300x180" alt="Student Portal">
+      <h3>Student Project Portal</h3>
+      <p>System to manage student projects with mentor feedback, file submission, and progress tracking.</p>
+      <a href="#" download>Download Project</a>
+    </div>
+    <!-- Add more projects similarly -->
+  </div>
+</section>
+
+<section id="team">
+  <h2>Collaborators</h2>
+  <div class="team-container">
+    <div class="team-card">
+      <img src="https://via.placeholder.com/120" alt="Byiringiro Belden">
+      <h4>Byiringiro Belden</h4>
+      <p>Project Collaborator & Developer</p>
+    </div>
+    <div class="team-card">
+      <img src="https://via.placeholder.com/120" alt="Mugisha Gerblet">
+      <h4>Mugisha Gerblet</h4>
+      <p>UI/UX Designer</p>
+    </div>
+    <div class="team-card">
+      <img src="https://via.placeholder.com/120" alt="Niyogisubizo Daniel">
+      <h4>Niyogisubizo Daniel</h4>
+      <p>Backend Developer</p>
+    </div>
+  </div>
+</section>
+
+<section id="skills">
+  <h2>Skills</h2>
+  <div class="skills-container">
+    <span class="skill-badge">HTML</span>
+    <span class="skill-badge">CSS</span>
+    <span class="skill-badge">JavaScript</span>
+    <span class="skill-badge">Node.js</span>
+    <span class="skill-badge">Project Management</span>
+    <span class="skill-badge">UI/UX Design</span>
+    <span class="skill-badge">MySQL</span>
+    <span class="skill-badge">Git & Version Control</span>
+  </div>
+</section>
+
+<section id="contact">
+  <h2>Contact</h2>
+  <div class="contact">
+    <p>Email: <a href="mailto:charles@example.com">charles@example.com</a></p>
+    <p>Phone: +250 7XX XXX XXX</p>
+    <p>LinkedIn: <a href="https://www.linkedin.com/in/charles" target="_blank">linkedin.com/in/charles</a></p>
+    <p>GitHub: <a href="https://github.com/charles" target="_blank">github.com/charles</a></p>
+  </div>
+</section>
+
+</body>
+</html>

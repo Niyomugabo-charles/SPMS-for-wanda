@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Portfolio — N.charles</title>
+  <meta name="description" content="Portfolio of Your Name — qualifications, projects, 3D visuals, interactive UI." />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛠️</text></svg>">
+  <style>
+    /* Loader overlay full-screen */
+#loader-overlay {
+  position: fixed;
+  top:0; left:0;
+  width:100%; height:100%;
+  background: linear-gradient(135deg, #070707, #020202);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  z-index:9999;
+  opacity:1;
+  pointer-events:all;
+  transition: opacity 0.5s ease;
+}
+
+/* Spinner */
+.spinner {
+  border:8px solid rgba(207, 144, 9, 0.3);
+  border-top:8px solid #fff;
+  border-radius:50%;
+  width:70px;
+  height:70px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+    /* ===========
+       CSS VARIABLES
+       =========== */
+    :root {
+      --bg: #0f1216;
+      --panel: #151a21;
+      --text: #e6edf3;
+      --muted: #a9b6c6;
+      --primary: #5cc8ff;
+      --primary-2: #58e6a9;
+      --accent: #ff7aa2;
+      --warning: #f7c948;
+      --success: #3ddc97;
+      --shadow: rgba(0,0,0,0.35);
+      --ring: rgba(92,200,255,0.4);
+      --border: #232a34;
+      --surface: #0c0f13;
+      --gradient: linear-gradient(135deg, #5cc8ff 0%, #a78bfa 50%, #58e6a9 100%);
+      --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      --radius: 14px;
+      --radius-sm: 10px;
+      --radius-lg: 22px;
+      --gap: 22px;
+      --gap-sm: 12px;
+      --gap-lg: 32px;
+      --blur: 18px;
+      --maxw: 1200px;
+      --perspective: 900px;
+    }
+    [data-theme="light"] {
+      --bg: #f7f9fc;
+      --panel: #ffffff;
+      --text: #15202b;
+      --muted: #566573;
+      --primary: #0ea5e9;
+      --primary-2: #10b981;
+      --accent: #f43f5e;
+      --warning: #f59e0b;
+      --success: #22c55e;
+      --shadow: rgba(10,12,16,0.12);
+      --ring: rgba(14,165,233,0.28);
+      --border: #e5e7eb;
+      --surface: #f2f4f7;
+      --gradient: linear-gradient(135deg, #0ea5e9 0%, #a78bfa 50%, #10b981 100%);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      :root { --perspective: 0px; }
+      .animated, .parallax, .tilt, .floating, .flip, .spin { animation: none !important; transition: none !important; }
+    }
+
+    /* ===========
+       GLOBAL RESET
+       =========== */
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      color: var(--text);
+      background: radial-gradient(1200px 600px at 10% 10%, rgba(92,200,255,0.10), transparent 35%) no-repeat,
+                  radial-gradient(1400px 800px at 90% 20%, rgba(168,139,250,0.10), transparent 45%) no-repeat,
+                  var(--bg);
+      line-height: 1.55;
+    }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    button { font: inherit; cursor: pointer; }
+    :focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; border-radius: 8px; }
+
+    /* ===========
+       LAYOUT
+       =========== */
+    .container { max-width: var(--maxw); margin: 0 auto; padding: 0 var(--gap); }
+    header {
+      position: sticky; top: 0; z-index: 50; backdrop-filter: blur(10px);
+      background: color-mix(in oklab, var(--panel), transparent 75%);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav {
+      display: flex; align-items: center; justify-content: space-between; gap: var(--gap);
+      height: 72px;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand .logo {
+      width: 40px; height: 40px; border-radius: 12px; background: var(--gradient);
+      box-shadow: 0 8px 24px var(--shadow); transform: translateZ(0);
+    }
+    .brand h1 { font-size: 1.1rem; letter-spacing: 0.3px; }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .btn {
+      padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: var(--panel); color: var(--text);
+      transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px var(--shadow); }
+    .btn-primary { background: var(--primary); color: white; border-color: transparent; }
+    .btn-success { background: var(--success); color: white; border-color: transparent; }
+    .btn-ghost { background: transparent; }
+    .chip {
+      display:inline-block; padding:6px 10px; border-radius: 999px; border: 1px dashed var(--border); color: var(--muted);
+      background: color-mix(in oklab, var(--panel), transparent 40%);
+    }
+
+    main { display: grid; gap: var(--gap-lg); }
+    section { scroll-margin-top: 90px; }
+
+    /* ===========
+       HERO WITH 3D/Parallax
+       =========== */
+    .hero {
+      position: relative; min-height: 68vh; display: grid; align-items: center; overflow: hidden;
+    }
+    .hero-grid {
+      display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--gap-lg);
+    }
+    @media (max-width: 900px) { .hero-grid { grid-template-columns: 1fr; } }
+    .hero-card {
+      background: color-mix(in oklab, var(--panel), transparent 10%);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      box-shadow: 0 24px 40px var(--shadow);
+      transform-style: preserve-3d; perspective: var(--perspective);
+    }
+    .tilt:hover { transform: rotateX(6deg) rotateY(-6deg); }
+    .hero-title {
+      font-size: clamp(1.6rem, 3.8vw, 3rem); margin: 0 0 8px 0;
+      background: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent;
+    }
+    .hero-sub { color: var(--muted); margin-bottom: 18px; }
+    .hero-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+    .hero-meta { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+
+    /* 3D cube gallery */
+    .cube-scene {
+      width: 100%; aspect-ratio: 1.1; perspective: 900px;
+      display: grid; place-items: center;
+    }
+    .cube {
+      position: relative; transform-style: preserve-3d; width: 260px; height: 260px;
+      animation: spinCube 18s linear infinite;
+    }
+    .cube-face {
+      position: absolute; width: 100%; height: 100%; border-radius: 18px;
+      overflow: hidden; border: 1px solid var(--border); box-shadow: 0 8px 24px var(--shadow);
+      background: var(--surface);
+    }
+    .cube-face img { width: 100%; height: 100%; object-fit: cover; }
+    .cube-face--front { transform: translateZ(130px); }
+    .cube-face--back  { transform: rotateY(180deg) translateZ(130px); }
+    .cube-face--right { transform: rotateY(90deg) translateZ(130px); }
+    .cube-face--left  { transform: rotateY(-90deg) translateZ(130px); }
+    .cube-face--top   { transform: rotateX(90deg) translateZ(130px); }
+    .cube-face--bottom{ transform: rotateX(-90deg) translateZ(130px); }
+    @keyframes spinCube {
+      0% { transform: rotateX(0) rotateY(0); }
+      50% { transform: rotateX(360deg) rotateY(180deg); }
+      100% { transform: rotateX(720deg) rotateY(360deg); }
+    }
+
+    /* ===========
+       QUALIFICATIONS TIMELINE
+       =========== */
+    .section-head { display: flex; align-items: end; justify-content: space-between; margin-bottom: 10px; }
+    .section-title { font-size: 1.6rem; margin: 0; }
+    .section-desc { color: var(--muted); }
+
+    .timeline {
+      position: relative; padding: 30px 0;
+      display: grid; gap: var(--gap);
+    }
+    .timeline::before {
+      content: ""; position: absolute; left: 20px; top: 0; bottom: 0; width: 3px; background: var(--border);
+    }
+    .entry {
+      display: grid; grid-template-columns: 60px 1fr; gap: var(--gap);
+      background: color-mix(in oklab, var(--panel), transparent 8%);
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 16px; transform: translateZ(0);
+    }
+    .entry .dot {
+      width: 18px; height: 18px; border-radius: 50%; background: var(--primary);
+      box-shadow: 0 0 0 6px color-mix(in oklab, var(--primary), transparent 70%);
+      margin-left: 12px; margin-top: 6px;
+    }
+    .entry h4 { margin: 0; font-size: 1.1rem; }
+    .entry .meta { color: var(--muted); margin: 6px 0 10px; }
+    .entry .skills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .entry .details { display: none; margin-top: 10px; color: var(--muted); }
+    .entry.open .details { display: block; }
+
+    /* ===========
+       PROJECTS GRID + INTERACTIVITY
+       =========== */
+    .filters { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+    .projects {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap);
+    }
+    @media (max-width: 1000px) { .projects { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 650px)  { .projects { grid-template-columns: 1fr; } }
+    .card {
+      position: relative; border: 1px solid var(--border); border-radius: var(--radius);
+      background: color-mix(in oklab, var(--panel), transparent 8%); overflow: hidden;
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+    .card:hover { transform: translateY(-4px) scale(1.01); box-shadow: 0 18px 36px var(--shadow); }
+    .card-media {
+      aspect-ratio: 16/9; overflow: hidden; background: var(--surface);
+    }
+    .card-media img { width: 100%; height: 100%; object-fit: cover; transform: scale(1.02); }
+    .card-body { padding: 14px; display: grid; gap: 10px; }
+    .card-title { font-weight: 600; margin: 0; }
+    .card-meta { color: var(--muted); font-size: 0.95rem; }
+    .fav-btn {
+      position: absolute; top: 10px; right: 10px; border-radius: 999px; padding: 8px 10px;
+      background: color-mix(in oklab, var(--panel), transparent 35%); border: 1px solid var(--border);
+    }
+    .fav-btn[data-fav="true"] { background: var(--accent); color: white; border-color: transparent; }
+
+    /* ===========
+       STATS + SKILLS
+       =========== */
+    .stats {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gap);
+    }
+    @media (max-width: 900px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+    .stat {
+      background: color-mix(in oklab, var(--panel), transparent 10%); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 18px; position: relative; overflow: hidden;
+    }
+    .stat .value { font-size: 2rem; font-weight: 700; }
+    .stat .label { color: var(--muted); }
+    .skills { display: flex; gap: 8px; flex-wrap: wrap; }
+    .skill { background: color-mix(in oklab, var(--panel), transparent 30%); border: 1px solid var(--border); border-radius: 999px; padding: 8px 12px; }
+    .progress {
+      height: 10px; border-radius: 999px; background: color-mix(in oklab, var(--panel), transparent 60%);
+      overflow: hidden; border: 1px solid var(--border);
+    }
+    .progress > span { display: block; height: 100%; background: var(--gradient); width: 0%; transition: width 1s ease; }
+
+    /* ===========
+       TESTIMONIALS 3D FLIP
+       =========== */
+    .testimonials {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gap);
+    }
+    @media (max-width: 900px) { .testimonials { grid-template-columns: 1fr; } }
+    .flip-card {
+      perspective: 900px;
+    }
+    .flip-card-inner {
+      position: relative; transform-style: preserve-3d; transition: transform .6s cubic-bezier(.18,.66,.22,.99);
+    }
+    .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+    .flip-face {
+      backface-visibility: hidden; border: 1px solid var(--border); border-radius: var(--radius);
+      background: color-mix(in oklab, var(--panel), transparent 8%); padding: 16px; min-height: 160px;
+    }
+    .flip-back { transform: rotateY(180deg); }
+
+    /* ===========
+       CONTACT + HIRE ME
+       =========== */
+    .contact {
+      display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--gap);
+    }
+    @media (max-width: 900px) { .contact { grid-template-columns: 1fr; } }
+    .form { background: color-mix(in oklab, var(--panel), transparent 8%); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+    @media (max-width: 650px) { .form-row { grid-template-columns: 1fr; } }
+    .field { display: grid; gap: 6px; }
+    .field input, .field textarea, .field select {
+      padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--panel); color: var(--text);
+    }
+    .form-actions { display: flex; gap: 10px; align-items: center; justify-content: space-between; }
+    .note { color: var(--muted); font-size: 0.9rem; }
+
+    .modal {
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.5); backdrop-filter: blur(4px); z-index: 200;
+    }
+    .modal.open { display: flex; }
+    .modal-card {
+      width: min(680px, 92vw); background: var(--panel); border-radius: var(--radius-lg); border: 1px solid var(--border);
+      box-shadow: 0 24px 40px var(--shadow); overflow: hidden;
+    }
+    .modal-head { display: flex; justify-content: space-between; align-items: center; padding: 14px 18px; border-bottom: 1px solid var(--border); }
+    .modal-body { padding: 18px; display: grid; gap: 12px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: end; padding: 14px 18px; border-top: 1px solid var(--border); }
+
+    /* ===========
+       FOOTER + EVENT FEED
+       =========== */
+    footer { border-top: 1px solid var(--border); background: color-mix(in oklab, var(--panel), transparent 10%); margin-top: 20px; }
+    .footer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+    @media (max-width: 900px) { .footer-grid { grid-template-columns: 1fr; } }
+    .event-feed { background: color-mix(in oklab, var(--panel), transparent 8%); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; max-height: 200px; overflow: auto; }
+    .event-item { font-size: .95rem; color: var(--muted); padding: 6px 0; border-bottom: 1px dashed var(--border); }
+    .event-item:last-child { border-bottom: none; }
+
+    /* ===========
+       MISC UTILITIES
+       =========== */
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: var(--gap); }
+    @media (max-width: 900px) { .row { grid-template-columns: 1fr; } }
+    .panel { background: color-mix(in oklab, var(--panel), transparent 8%); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+    .kbd { background: color-mix(in oklab, var(--panel), transparent 40%); border: 1px solid var(--border); border-radius: 6px; padding: 2px 6px; font-size: .85rem; }
+    .dense main, .dense .projects, .dense .stats, .dense .timeline { gap: 14px !important; }
+    .skip-link { position: absolute; left: -9999px; top: -9999px; }
+    .skip-link:focus { left: 10px; top: 10px; background: var(--panel); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); }
+
+  </style>
+</head>
+<body>
+
+<div id="loader-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Content nyamukuru -->
+<div id="content-wrap">
+<div class="center-wrap">
+  <a href="#content" class="skip-link">Skip to content</a>
+
+  <header role="banner">
+    <div class="container nav" aria-label="Primary navigation">
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <h1>N.charles</h1>
+        <span class="chip" id="availabilityChip">Available for hire</span>
+      </div>
+      <nav class="nav-actions" aria-label="Actions">
+        <button class="btn" id="themeToggle" aria-pressed="false">Toggle theme</button>
+        <button class="btn" id="layoutToggle" aria-pressed="false">Compact layout</button>
+        <button class="btn" id="motionToggle" aria-pressed="false">Reduce motion</button>
+        <button class="btn btn-primary" id="hireMeBtn">Hire me</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="content" class="container" role="main">
+    <!-- HERO -->
+    <section class="hero" id="hero" aria-label="Introduction">
+      <div class="hero-grid">
+        <div class="hero-card tilt">
+          <h2 class="hero-title">Product Engineer & Frontend Developer</h2>
+          <p class="hero-sub">I craft thoughtful interfaces, resilient systems, and tools that feel delightful. 7+ years shipping across web and mobile.</p>
+          <div class="hero-actions">
+            <button class="btn btn-primary" id="ctaHire">Hire me</button>
+            <button class="btn" id="downloadCV">Download CV</button>
+            <button class="btn btn-ghost" id="copyEmail" title="Copy email">Copy email</button>
+          </div>
+          <div class="hero-meta">
+            <span class="chip">Kigali, Rwanda</span>
+            <span class="chip">Open to remote</span>
+            <span class="chip">Time zone: EEST</span>
+          </div>
+        </div>
+        <div class="cube-scene" aria-label="3D gallery">
+          <div class="cube" id="cube">
+            <!-- Replace with your images -->
+            <div class="cube-face cube-face--front"><img loading="lazy" src="12 (2).jpg" alt="Tech workspace"></div>
+            <div class="cube-face cube-face--back"><img loading="lazy" src="12 (1).jpg" alt="Code screen"></div>
+            <div class="cube-face cube-face--right"><img loading="lazy" src="13 (1).PNG" alt="UI design"></div>
+            <div class="cube-face cube-face--left"><img loading="lazy" src="13 (2).PNG" alt="Hardware"></div>
+            <div class="cube-face cube-face--top"><img loading="lazy" src="12 (1).jpg" alt="Desk top"></div>
+            <div class="cube-face cube-face--bottom"><img loading="lazy" src="12 (1).jpg" alt="Laptop bottom"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- QUALIFICATIONS -->
+    <section id="qualifications" aria-label="Qualifications">
+      <div class="section-head">
+        <h3 class="section-title">Qualification timeline</h3>
+        <p class="section-desc">Degrees, certifications, and milestones with detail panels.</p>
+      </div>
+      <div class="timeline">
+        <article class="entry" tabindex="0">
+          <div class="dot" aria-hidden="true"></div>
+          <div>
+            <h4>BSc Computer Science — University of Rwanda</h4>
+            <div class="meta">2016 — 2020 · GPA 3.6/4.0 · Kigali</div>
+            <div class="skills">
+              <span class="skill">Data Structures</span>
+              <span class="skill">Algorithms</span>
+              <span class="skill">Operating Systems</span>
+            </div>
+            <p class="details">Capstone: Scalable incident tracking platform. TA for Algorithms II. Organized DevFest Rwanda.</p>
+            <button class="btn btn-ghost entry-toggle">More details</button>
+          </div>
+        </article>
+        <article class="entry" tabindex="0">
+          <div class="dot" aria-hidden="true"></div>
+          <div>
+            <h4>Certified Cloud Practitioner — AWS</h4>
+            <div class="meta">2021 · Certification ID: ABC-1234</div>
+            <div class="skills">
+              <span class="skill">EC2</span><span class="skill">S3</span><span class="skill">IAM</span><span class="skill">VPC</span>
+            </div>
+            <p class="details">Hands-on with IaC, least-privilege IAM, and cost-aware architecture. Led migration reducing spend by 28%.</p>
+            <button class="btn btn-ghost entry-toggle">More details</button>
+          </div>
+        </article>
+        <article class="entry" tabindex="0">
+          <div class="dot" aria-hidden="true"></div>
+          <div>
+            <h4>Frontend Engineer — Akagera Tech</h4>
+            <div class="meta">2020 — Present · Kigali · Senior IC</div>
+            <div class="skills">
+              <span class="skill">React</span><span class="skill">TypeScript</span><span class="skill">Node</span><span class="skill">Design Systems</span>
+            </div>
+            <p class="details">Led component library adoption; lighthouse ≥95. Built real-time analytics; 0.6s p95 latency.</p>
+            <button class="btn btn-ghost entry-toggle">More details</button>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section id="projects" aria-label="Projects">
+      <div class="section-head">
+        <h3 class="section-title">Projects</h3>
+        <p class="section-desc">Search, filter, and favorite. Preferences persist.</p>
+      </div>
+
+      <div class="filters">
+        <span class="chip">Filters</span>
+        <select class="chip" id="filterStack" aria-label="Filter by stack">
+          <option value="all">All stacks</option>
+          <option value="frontend">Frontend</option>
+          <option value="backend">Backend</option>
+          <option value="fullstack">Fullstack</option>
+          <option value="ml">ML/AI</option>
+        </select>
+        <select class="chip" id="filterYear" aria-label="Filter by year">
+          <option value="all">All years</option>
+          <option>2025</option><option>2024</option><option>2023</option>
+        </select>
+        <input class="chip" id="searchProject" placeholder="Search..." aria-label="Search projects" />
+        <button class="btn" id="resetFilters">Reset</button>
+      </div>
+
+      <div class="projects" id="projectGrid" aria-live="polite">
+        <!-- Sample cards -->
+        <article class="card" data-stack="frontend" data-year="2025" data-id="p1">
+          <button class="fav-btn" title="Favorite" aria-label="Favorite project">♡</button>
+          <div class="card-media"><img loading="lazy" src="https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=1200&auto=format&fit=crop" alt="Dashboard UI" /></div>
+          <div class="card-body">
+            <h4 class="card-title">Neon Dashboard</h4>
+            <div class="card-meta">React · Tailwind · Vite</div>
+            <p>Real-time analytics, custom charts, live alerts, and role-based access.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary">View case study</button>
+              <button class="btn">Live demo</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-stack="fullstack" data-year="2024" data-id="p2">
+          <button class="fav-btn" title="Favorite" aria-label="Favorite project">♡</button>
+          <div class="card-media"><img loading="lazy" src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=1200&auto=format&fit=crop" alt="API design" /></div>
+          <div class="card-body">
+            <h4 class="card-title">Field Ops Platform</h4>
+            <div class="card-meta">Next.js · Node · Postgres · Kafka</div>
+            <p>Offline-first mobile, event sourcing, zero-downtime deployments, SLA 99.98%.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary">View case study</button>
+              <button class="btn">Live demo</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="card" data-stack="ml" data-year="2023" data-id="p3">
+          <button class="fav-btn" title="Favorite" aria-label="Favorite project">♡</button>
+          <div class="card-media"><img loading="lazy" src="https://images.unsplash.com/photo-1587620962725-abab7fe55159?q=80&w=1200&auto=format&fit=crop" alt="ML pipeline" /></div>
+          <div class="card-body">
+            <h4 class="card-title">Fraud Radar</h4>
+            <div class="card-meta">Python · FastAPI · XGBoost</div>
+            <p>Real-time risk scoring with SHAP explanations, p99 under 120ms.</p>
+            <div class="hero-actions">
+              <button class="btn btn-primary">View case study</button>
+              <button class="btn">Live demo</button>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- STATS + SKILLS -->
+    <section id="skills" aria-label="Skills">
+      <div class="section-head">
+        <h3 class="section-title">Skills & impact</h3>
+        <p class="section-desc">Animated metrics and capability map.</p>
+      </div>
+      <div class="row">
+        <div class="panel">
+          <div class="stats">
+            <div class="stat">
+              <div class="value" data-counter="42">0</div>
+              <div class="label">Projects shipped</div>
+            </div>
+            <div class="stat">
+              <div class="value" data-counter="97">0</div>
+              <div class="label">Lighthouse score</div>
+            </div>
+            <div class="stat">
+              <div class="value" data-counter="28">0</div>
+              <div class="label">% cost savings</div>
+            </div>
+            <div class="stat">
+              <div class="value" data-counter="0.6">0</div>
+              <div class="label">p95 latency (s)</div>
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <div class="skills">
+            <span class="skill">React</span><span class="skill">TypeScript</span><span class="skill">Node.js</span>
+            <span class="skill">Next.js</span><span class="skill">GraphQL</span><span class="skill">Postgres</span>
+            <span class="skill">AWS</span><span class="skill">Docker</span><span class="skill">CI/CD</span>
+          </div>
+          <div style="height:12px"></div>
+          <div class="progress"><span style="width: 85%;" aria-hidden="true"></span></div>
+          <p class="note">Design systems · Accessibility · Performance engineering</p>
+        </div>
+        <div class="panel parallax" id="parallaxPanel" style="transform-style:preserve-3d; perspective: var(--perspective);">
+          <h4>Design philosophy</h4>
+          <p>I believe in honest interfaces, clear states, robust error handling, and measurable outcomes. Craft is in the decisions.</p>
+          <div style="position:relative;height:180px;border-radius:12px;overflow:hidden;background:var(--surface);">
+            <img loading="lazy" src="https://images.unsplash.com/photo-1484417894907-623942c92d48?q=80&w=1200&auto=format&fit=crop" alt="Pattern" style="position:absolute; inset:0; transform: translateZ(40px);" />
+            <div style="position:absolute; inset:0; background: linear-gradient(180deg, transparent, rgba(0,0,0,.35)); transform: translateZ(10px);"></div>
+            <div style="position:absolute; bottom:10px; left:10px;" class="chip">3D parallax</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section id="testimonials" aria-label="Testimonials">
+      <div class="section-head">
+        <h3 class="section-title">Testimonials</h3>
+        <p class="section-desc">Hover to flip and read recommendations.</p>
+      </div>
+      <div class="testimonials">
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-face">
+              <strong>CTO, Umurava</strong>
+              <p>“Clear thinking and fast delivery. Rare combination of design sensitivity and engineering practicality.”</p>
+            </div>
+            <div class="flip-face flip-back">
+              <p>Brought p95 from 1.9s to 0.7s while reducing infra cost 22% and improving DX.</p>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-face">
+              <strong>PM, Akagera Tech</strong>
+              <p>“Ownership is outstanding. Communicates tradeoffs and never compromises on quality.”</p>
+            </div>
+            <div class="flip-face flip-back">
+              <p>Launched offline-first mobile with 15k+ monthly active users in rural areas.</p>
+            </div>
+          </div>
+        </div>
+        <div class="flip-card">
+          <div class="flip-card-inner">
+            <div class="flip-face">
+              <strong>Design Lead</strong>
+              <p>“Thoughtful UI and accessible systems. Collaboration is smooth and productive.”</p>
+            </div>
+            <div class="flip-face flip-back">
+              <p>Shipped a11y fixes for WCAG 2.2 AA and created component documentation.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" aria-label="Contact">
+      <div class="section-head">
+        <h3 class="section-title">Contact</h3>
+        <p class="section-desc">Reach out. Form autosaves to LocalStorage.</p>
+      </div>
+
+      <div class="contact">
+        <form class="form" id="contactForm" autocomplete="on" aria-describedby="contactNote">
+          <div class="form-row">
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" name="name" required />
+            </div>
+            <div class="field">
+              <label for="email">Email</label>
+              <input id="email" name="email" type="email" required />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="company">Company</label>
+              <input id="company" name="company" />
+            </div>
+            <div class="field">
+              <label for="budget">Budget range</label>
+              <select id="budget" name="budget">
+                <option value="">Select...</option>
+                <option>$1k–$5k</option>
+                <option>$5k–$20k</option>
+                <option>$20k+</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="6" required></textarea>
+          </div>
+          <div class="form-actions">
+            <div class="note" id="contactNote">Autosave: on. Your draft stays locally.</div>
+            <div style="display:flex;gap:10px;">
+              <button type="button" class="btn" id="clearDraft">Clear draft</button>
+              <button type="submit" class="btn btn-success">Send</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="panel">
+          <h4>Work preferences</h4>
+          <p>Most productive collaborating closely with PMs and Designers. Comfortable leading technical initiatives and mentorship.</p>
+          <div class="skills">
+            <span class="skill">Remote-first</span><span class="skill">Async</span><span class="skill">Design reviews</span>
+            <span class="skill">Code reviews</span><span class="skill">Documentation</span>
+          </div>
+          <div style="height: 18px;"></div>
+          <button class="btn btn-primary" id="hireMeInline">Hire me</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- HIRE ME MODAL -->
+  <div class="modal" id="hireModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h4 id="modalTitle">Hire me</h4>
+        <button class="btn" id="closeModal" aria-label="Close">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="field">
+          <label for="availability">Availability</label>
+          <select id="availability">
+            <option>Immediate</option>
+            <option>In 2 weeks</option>
+            <option>In 1 month</option>
+            <option>Consultation only</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="engagement">Engagement type</label>
+          <select id="engagement">
+            <option>Fixed scope</option>
+            <option>Time & materials</option>
+            <option>Retainer</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="notes">Notes</label>
+          <textarea id="notes" rows="4" placeholder="Share context (timeline, goals, constraints)"></textarea>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn" id="savePreferences">Save preferences</button>
+        <button class="btn btn-success" id="requestIntro">Request intro</button>
+      </div>
+    </div>
+  </div>
+
+  <footer role="contentinfo">
+    <div class="container footer-grid">
+      <div>
+        <p>&copy; <span id="year"></span> Your Name — Kigali, Rwanda</p>
+        <p>Built with native web tech, CSS 3D, and care. <span class="chip">Press “?” for shortcuts</span></p>
+      </div>
+      <div>
+        <div class="event-feed" id="eventFeed" aria-live="polite" aria-label="Session events"></div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ===========
+    // UTILITIES
+    // ===========
+    const $ = (sel, ctx = document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx = document) => Array.from(ctx.querySelectorAll(sel));
+    const storage = {
+      get(key, fallback = null) {
+        try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+      },
+      set(key, value) {
+        try { localStorage.setItem(key, JSON.stringify(value)); } catch {}
+      },
+      sget(key, fallback = null) {
+        try { const v = sessionStorage.getItem(key); return v ? JSON.parse(v) : fallback; } catch { return fallback; }
+      },
+      sset(key, value) {
+        try { sessionStorage.setItem(key, JSON.stringify(value)); } catch {}
+      }
+    };
+    const logEvent = (msg) => {
+      const events = storage.sget('events', []);
+      const entry = { t: new Date().toLocaleTimeString(), m: msg };
+      events.push(entry);
+      storage.sset('events', events);
+      renderEvents();
+    };
+    const renderEvents = () => {
+      const wrap = $('#eventFeed');
+      const events = storage.sget('events', []);
+      if (!wrap) return; // no event feed in DOM — skip rendering
+      wrap.innerHTML = events.map(e => `<div class="event-item">[${e.t}] ${e.m}</div>`).join('') || '<div class="event-item">No events yet.</div>';
+      wrap.scrollTop = wrap.scrollHeight;
+    };
+
+    // ===========
+    // THEME + PREFERENCES
+    // ===========
+    const applyTheme = (t) => {
+      document.documentElement.setAttribute('data-theme', t);
+      const themeToggle = $('#themeToggle');
+      if (themeToggle) themeToggle.setAttribute('aria-pressed', String(t === 'dark'));
+    };
+    const applyDensity = (dense) => {
+      document.body.classList.toggle('dense', dense);
+      const layoutToggle = $('#layoutToggle');
+      if (layoutToggle) layoutToggle.setAttribute('aria-pressed', String(dense));
+    };
+    const applyMotionPref = (reduced) => {
+      document.body.classList.toggle('reduced-motion', reduced);
+      const motionToggle = $('#motionToggle');
+      if (motionToggle) motionToggle.setAttribute('aria-pressed', String(reduced));
+      // Simulate motion reduce by disabling cube animation (guarded)
+      const cubeEl = $('.cube');
+      if (cubeEl && cubeEl.style) cubeEl.style.animationPlayState = reduced ? 'paused' : 'running';
+    };
+
+    // Init preferences
+    const initPrefs = () => {
+      const theme = storage.get('theme', 'light');
+      applyTheme(theme);
+      const dense = storage.get('dense', false);
+      applyDensity(dense);
+      const reduced = storage.get('reducedMotion', false);
+      applyMotionPref(reduced);
+      const avail = storage.get('availability', 'Available for hire');
+      const chip = $('#availabilityChip');
+      if (chip) chip.textContent = avail;
+    };
+
+    // ===========
+    // HERO ACTIONS
+    // ===========
+    const email = 'you@example.com';
+    const copyEmailBtn = $('#copyEmail');
+    if (copyEmailBtn) copyEmailBtn.addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(email); logEvent('Email copied to clipboard'); } catch { logEvent('Clipboard not available'); }
+    });
+    const downloadCvBtn = $('#downloadCV');
+    if (downloadCvBtn) downloadCvBtn.addEventListener('click', () => {
+      logEvent('CV download requested');
+      alert('Link your CV PDF here.');
+    });
+
+    // ===========
+    // TIMELINE TOGGLES
+    // ===========
+    $$('.entry').forEach(entry => {
+      const btn = $('.entry-toggle', entry);
+      entry.addEventListener('keypress', (e) => { if (e.key === 'Enter') entry.classList.toggle('open'); });
+      if (btn) btn.addEventListener('click', () => entry.classList.toggle('open'));
+    });
+
+    // ===========
+    // PROJECTS: FILTER + SEARCH + FAVORITES
+    // ===========
+    const favorites = new Set(storage.get('favorites', []));
+    const applyFavUI = () => {
+      $$('.fav-btn').forEach(btn => {
+        const id = btn.closest('.card').dataset.id;
+        btn.dataset.fav = favorites.has(id);
+        btn.textContent = favorites.has(id) ? '♥' : '♡';
+      });
+    };
+    applyFavUI();
+    $$('.fav-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.closest('.card').dataset.id;
+        if (favorites.has(id)) favorites.delete(id); else favorites.add(id);
+        storage.set('favorites', Array.from(favorites));
+        applyFavUI();
+        logEvent(`Project ${id} favorite toggled`);
+      });
+    });
+
+    const filters = { stack: 'all', year: 'all', q: '' };
+    const applyFilters = () => {
+      const cards = $$('#projectGrid .card');
+      cards.forEach(card => {
+        const matchStack = filters.stack === 'all' || card.dataset.stack === filters.stack;
+        const matchYear  = filters.year === 'all'  || card.dataset.year === filters.year;
+        const text = card.textContent.toLowerCase();
+        const matchQ     = !filters.q || text.includes(filters.q.toLowerCase());
+        card.style.display = (matchStack && matchYear && matchQ) ? '' : 'none';
+      });
+      storage.set('filters', filters);
+      logEvent('Projects filtered');
+    };
+    const savedFilters = storage.get('filters', null);
+    if (savedFilters) {
+      Object.assign(filters, savedFilters);
+      const fStack = $('#filterStack'); if (fStack) fStack.value = filters.stack;
+      const fYear = $('#filterYear'); if (fYear) fYear.value = filters.year;
+      const fSearch = $('#searchProject'); if (fSearch) fSearch.value = filters.q;
+    }
+    const filterStackEl = $('#filterStack');
+    if (filterStackEl) filterStackEl.addEventListener('change', e => { filters.stack = e.target.value; applyFilters(); });
+    const filterYearEl = $('#filterYear');
+    if (filterYearEl) filterYearEl.addEventListener('change', e => { filters.year = e.target.value; applyFilters(); });
+    const searchProjectEl = $('#searchProject');
+    if (searchProjectEl) searchProjectEl.addEventListener('input', e => { filters.q = e.target.value; applyFilters(); });
+    const resetFiltersEl = $('#resetFilters');
+    if (resetFiltersEl) resetFiltersEl.addEventListener('click', () => {
+      filters.stack = 'all'; filters.year = 'all'; filters.q = '';
+      if ($('#filterStack')) $('#filterStack').value = 'all'; if ($('#filterYear')) $('#filterYear').value = 'all'; if ($('#searchProject')) $('#searchProject').value = '';
+      applyFilters();
+    });
+    applyFilters();
+
+    // ===========
+    // COUNTERS ANIMATION
+    // ===========
+    const animateCounters = () => {
+      $$('.value[data-counter]').forEach(el => {
+        const target = parseFloat(el.dataset.counter);
+        const isFloat = String(target).includes('.');
+        let current = 0;
+        const step = target / 60;
+        const tick = () => {
+          current += step;
+          if (current >= target) current = target;
+          el.textContent = isFloat ? current.toFixed(1) : Math.round(current);
+          if (current < target) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      });
+    };
+
+    // ===========
+    // PROGRESS BAR INIT
+    // ===========
+    const initProgress = () => {
+      $$('.progress > span').forEach(span => {
+        const width = span.style.width || '60%';
+        span.style.width = '0%';
+        setTimeout(() => { span.style.width = width; }, 200);
+      });
+    };
+
+    // ===========
+    // PARALLAX PANEL
+    // ===========
+    const initParallax = () => {
+      const panel = $('#parallaxPanel');
+      if (!panel) return;
+      panel.addEventListener('pointermove', (e) => {
+        const rect = panel.getBoundingClientRect();
+        const mx = (e.clientX - rect.left) / rect.width - 0.5;
+        const my = (e.clientY - rect.top) / rect.height - 0.5;
+        panel.style.transform = `rotateY(${mx * 6}deg) rotateX(${-my * 6}deg)`;
+      });
+      panel.addEventListener('pointerleave', () => { panel.style.transform = 'none'; });
+    };
+
+    // ===========
+    // HIRE ME MODAL + PREFERENCES
+    // ===========
+    const openModal = () => {
+      const modal = $('#hireModal');
+      if (modal) modal.classList.add('open');
+      const notesEl = $('#notes'); if (notesEl) notesEl.focus();
+      logEvent('Hire modal opened');
+    };
+    const closeModal = () => {
+      const modal = $('#hireModal'); if (modal) modal.classList.remove('open');
+      logEvent('Hire modal closed');
+    };
+    const hireMeBtnEl = $('#hireMeBtn'); if (hireMeBtnEl) hireMeBtnEl.addEventListener('click', openModal);
+    const ctaHireEl = $('#ctaHire'); if (ctaHireEl) ctaHireEl.addEventListener('click', openModal);
+    const hireMeInlineEl = $('#hireMeInline'); if (hireMeInlineEl) hireMeInlineEl.addEventListener('click', openModal);
+    const closeModalEl = $('#closeModal'); if (closeModalEl) closeModalEl.addEventListener('click', closeModal);
+    const savePreferencesEl = $('#savePreferences');
+    if (savePreferencesEl) savePreferencesEl.addEventListener('click', () => {
+      const availability = $('#availability') ? $('#availability').value : '';
+      const engagement = $('#engagement') ? $('#engagement').value : '';
+      const notes = $('#notes') ? $('#notes').value : '';
+      storage.set('hirePrefs', { availability, engagement, notes });
+      storage.set('availability', availability);
+      const chipEl = $('#availabilityChip'); if (chipEl) chipEl.textContent = availability;
+      logEvent('Hire preferences saved');
+      alert('Preferences saved locally.');
+    });
+    const requestIntroEl = $('#requestIntro');
+    if (requestIntroEl) requestIntroEl.addEventListener('click', () => {
+      logEvent('Intro requested');
+      alert('Intro request captured. Connect via the contact form.');
+      closeModal();
+    });
+
+    // ===========
+    // THEME + LAYOUT TOGGLES
+    // ===========
+    const themeToggleEl = $('#themeToggle');
+    if (themeToggleEl) themeToggleEl.addEventListener('click', () => {
+      const t = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      storage.set('theme', t); applyTheme(t);
+      logEvent('Theme toggled');
+    });
+    const layoutToggleEl = $('#layoutToggle');
+    if (layoutToggleEl) layoutToggleEl.addEventListener('click', () => {
+      const dense = !document.body.classList.contains('dense');
+      storage.set('dense', dense); applyDensity(dense);
+      logEvent('Layout density toggled');
+    });
+    const motionToggleEl = $('#motionToggle');
+    if (motionToggleEl) motionToggleEl.addEventListener('click', () => {
+      const reduced = !document.body.classList.contains('reduced-motion');
+      storage.set('reducedMotion', reduced); applyMotionPref(reduced);
+      logEvent('Motion preference toggled');
+    });
+
+    // ===========
+    // CONTACT FORM AUTOSAVE
+    // ===========
+    const form = $('#contactForm');
+    const draftKey = 'contactDraft';
+    const applyDraft = () => {
+      const draft = storage.get(draftKey, null);
+      if (!draft) return;
+      ['name','email','company','budget','message'].forEach(id => { const el = $('#' + id); if (el && draft[id] != null) el.value = draft[id]; });
+    };
+    const saveDraft = () => {
+      const data = {};
+      ['name','email','company','budget','message'].forEach(id => { const el = $('#' + id); data[id] = el ? el.value : ''; });
+      storage.set(draftKey, data);
+      logEvent('Contact draft saved');
+    };
+    if (form) {
+      form.addEventListener('input', () => { saveDraft(); });
+      const clearDraftEl = $('#clearDraft');
+      if (clearDraftEl) clearDraftEl.addEventListener('click', () => { localStorage.removeItem(draftKey); applyDraft(); form.reset(); logEvent('Contact draft cleared'); });
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        logEvent('Contact form submitted');
+        alert('Thanks! This demo does not send. Wire this to your backend.');
+      });
+    }
+
+    // ===========
+    // SESSION EVENTS + SHORTCUTS
+    // ===========
+    const sectionObserver = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) logEvent(`Section viewed: ${e.target.id}`);
+      });
+    }, { threshold: 0.5 });
+    $$('section').forEach(sec => sectionObserver.observe(sec));
+
+    const shortcuts = {
+      '?': () => alert('Shortcuts:\n- t: toggle theme\n- d: toggle density\n- m: reduce motion\n- h: hire modal'),
+      't': () => $('#themeToggle').click(),
+      'd': () => $('#layoutToggle').click(),
+      'm': () => $('#motionToggle').click(),
+      'h': () => openModal()
+    };
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      if (shortcuts[e.key]) { e.preventDefault(); shortcuts[e.key](); }
+    });
+
+    // ===========
+    // INIT
+    // ===========
+    document.addEventListener('DOMContentLoaded', () => {
+      $('#year').textContent = new Date().getFullYear();
+      initPrefs();
+      renderEvents();
+      animateCounters();
+      initProgress();
+      initParallax();
+      logEvent('First visit');
+    });
+    // Loader JS
+window.addEventListener('load', function(){
+    const loader = document.getElementById('loader-overlay');
+    const content = document.getElementById('content-wrap');
+    setTimeout(function(){
+        loader.style.opacity='0';
+        loader.style.pointerEvents='none';
+        content.style.display='block';
+    },2000); // 2 seconds loader
+});
+  </script>
+</body>
+</html>

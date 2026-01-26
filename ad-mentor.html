@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Student Group Meeting</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:Segoe UI, Arial, sans-serif;}
+    body{background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:15px;}
+
+    /* Loader overlay */
+    #loader-overlay {
+      position: fixed;
+      top:0; left:0;
+      width:100%; height:100%;
+      background: rgba(0,0,0,0.8);
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      z-index:9999;
+      opacity:1;
+      pointer-events:all;
+      transition: opacity 0.5s ease;
+    }
+    #loader-overlay.hide {
+      opacity:0;
+      pointer-events:none;
+    }
+    .spinner {
+      border:8px solid rgba(255,255,255,0.3);
+      border-top:8px solid #00c3ff;
+      border-radius:50%;
+      width:70px;
+      height:70px;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Main content hidden initially */
+    #main-content { display:none; }
+
+    .student-meeting{width:100%;max-width:1400px;background:rgba(0,0,0,0.8);border-radius:20px;padding:15px;box-shadow:0 15px 40px rgba(0,0,0,0.6);}
+    .header{text-align:center;font-size:22px;font-weight:bold;margin-bottom:15px;}
+    .videos{display:grid;grid-template-columns:repeat(auto-fill, minmax(140px, 1fr));gap:12px;max-height:700px;overflow-y:auto;}
+    .video-box{position:relative;background:#000;border-radius:15px;overflow:hidden;height:120px;display:flex;align-items:center;justify-content:center;}
+    .video-box video, .video-box .placeholder{width:100%;height:100%;object-fit:cover;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;}
+    .video-label{position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,0.6);padding:2px 6px;border-radius:8px;font-size:11px;}
+    .controls{display:flex;justify-content:center;gap:12px;margin-top:15px;flex-wrap:wrap;}
+    .controls button{border:none;background:#00c3ff;color:white;padding:8px 14px;border-radius:30px;cursor:pointer;transition:0.3s;display:flex;align-items:center;gap:6px;font-weight:600;}
+    .controls button:hover{background:#008ecf;transform:scale(1.05);}
+    .controls .end{background:#e63946;}
+    .controls .end:hover{background:#b52b38;}
+  </style>
+</head>
+<body>
+
+<!-- Loader overlay -->
+<div id="loader-overlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- Main content -->
+<div id="main-content">
+<div class="student-meeting">
+  <div class="header">👨‍🎓 Student Group Meeting (Simulation)</div>
+  <div class="videos" id="groupGrid">
+    <div class="video-box"><video id="studentVideo" autoplay muted></video><div class="video-label">You (Student)</div></div>
+    <div class="video-box"><div class="placeholder">Mentor Video</div><div class="video-label">Mentor</div></div>
+    <div class="video-box"><div class="placeholder">Admin Video</div><div class="video-label">Admin</div></div>
+  </div>
+
+  <div class="controls">
+    <button onclick="startStudentMeeting()"><i class='bx bx-video'></i> Start</button>
+    <button onclick="toggleMute()"><i class='bx bx-microphone'></i> Mute</button>
+    <button onclick="toggleCamera()"><i class='bx bx-camera'></i> Camera</button>
+    <button class="end" onclick="endMeeting()"><i class='bx bx-phone-off'></i> End</button>
+  </div>
+
+  <div style="margin-top:25px; background:rgba(255,255,255,0.04); padding:20px; border-radius:20px;">
+    <h3 style="text-align:center;">📞 Admin Call Options</h3>
+    <div style="text-align:center; margin-bottom:10px;">
+      <button onclick="adminCallMentorOnly()" style="background:#16a34a; color:#fff; font-weight:bold; margin-right:10px;">
+        📞 Call Mentor Only (Private)
+      </button>
+      <button onclick="adminCallAllPublic()" style="background:#2563eb; color:#fff; font-weight:bold;">
+        📢 Call All (Public)
+      </button>
+    </div>
+    <canvas id="meetingChart" width="400" height="200" style="background:#0f172a; border-radius:15px;"></canvas>
+  </div>
+</div>
+</div>
+
+<script>
+  // Loader logic
+  window.addEventListener('load', () => {
+    const loader = document.getElementById('loader-overlay');
+    const mainContent = document.getElementById('main-content');
+    setTimeout(() => {
+      loader.classList.add('hide');
+      mainContent.style.display='block';
+    }, 1500); // Loader duration 1.5s
+  });
+
+  let studentStream;
+  let audioOn=true, videoOn=true;
+
+  function startStudentMeeting(){
+    navigator.mediaDevices.getUserMedia({video:true,audio:true})
+    .then(stream=>{
+      studentStream=stream;
+      document.getElementById('studentVideo').srcObject=stream;
+    })
+    .catch(err=>alert('Camera cyangwa Microphone ntibikora'));
+  }
+  function toggleMute(){if(!studentStream)return; audioOn=!audioOn; studentStream.getAudioTracks()[0].enabled=audioOn;}
+  function toggleCamera(){if(!studentStream)return; videoOn=!videoOn; studentStream.getVideoTracks()[0].enabled=videoOn;}
+  function endMeeting(){if(studentStream){studentStream.getTracks().forEach(track=>track.stop());}document.getElementById('studentVideo').srcObject=null;}
+
+  function adminCallMentorOnly(){alert('Admin is calling Mentor only (Private)');}
+  function adminCallAllPublic(){alert('Admin is calling all participants (Public)');}
+
+  // Generate 25 simulated students
+  const groupGrid=document.getElementById('groupGrid');
+  for(let i=1;i<=25;i++){
+    const div=document.createElement('div');
+    div.className='video-box';
+    div.innerHTML=`<div class='placeholder'>Student ${i}</div><div class='video-label'>Student ${i}</div>`;
+    groupGrid.appendChild(div);
+  }
+
+  // Chart Simulation
+  const canvas=document.getElementById('meetingChart');
+  const ctx=canvas.getContext('2d');
+  const data=[25,1,1,27];
+  const labels=['Students','Mentor','Admin','Active'];
+  function drawChart(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    const barWidth=60,gap=30;
+    data.forEach((val,i)=>{
+      const x=40+i*(barWidth+gap);
+      const y=canvas.height-val*7;
+      ctx.fillStyle='#38bdf8';
+      ctx.fillRect(x,y,barWidth,val*7);
+      ctx.fillStyle='#fff';
+      ctx.fillText(labels[i],x,canvas.height-5);
+    });
+  }
+  drawChart();
+</script>
+</body>
+</html>
